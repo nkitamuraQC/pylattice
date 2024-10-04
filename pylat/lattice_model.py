@@ -1,5 +1,6 @@
 from pylat.template import *
 import pathlib, os
+import numpy as np
 
 class LatticeModel_gen:
     def __init__(self, lat_type, ints_dict):
@@ -12,10 +13,17 @@ class LatticeModel_gen:
     def drive(self):
         temp = self.lattice_dict[self.lat_type]
         temp = temp.format(**self.ints_dict)
-        wf = open(str(self.tmp_dir.joinpath("tmp.in")), "w")
+        nsme = str(self.tmp_dir.joinpath("tmp.in"))
+        wf = open(name, "w")
         wf.write(temp)
         wf.close()
-        os.system(f"{self.vmcdry_path} {
+        os.system(f"{self.vmcdry_path} {name}")
+        return
+
+    def get_ints(self):
+        ## read
+        return
+    
         
             
             
