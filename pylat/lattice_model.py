@@ -5,6 +5,8 @@ import numpy as np
 class LatticeModel_gen:
     def __init__(self, lat_type, ints_dict, H, W, nelec):
         self.ints_dict = ints_dict
+        self.H = H
+        self.W = W
         self.size_dict = {"H": H, "W": W, "ncond": nelec}
         self.lat_type = lat_type
         self.vmcdry_path = ""
@@ -31,6 +33,9 @@ class LatticeModel_gen:
         Returns:
             tuple(np.array, np.array)
         """
+        norb = self.H * self.W
+        int1e = np.zeros((norb, 2, norb, 2))
+        int2e = np.zeros((norb, norb, norb, norb))
         return
     
         
