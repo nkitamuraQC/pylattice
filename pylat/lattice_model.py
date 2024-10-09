@@ -26,7 +26,7 @@ class LatticeModel_gen:
         os.system(f"{self.vmcdry_path} {name}")
         return
 
-    def get_ints(self):
+    def get_ints(self, start=5):
         """
         read results
 
@@ -36,7 +36,32 @@ class LatticeModel_gen:
         norb = self.H * self.W
         int1e = np.zeros((norb, 2, norb, 2))
         int2e = np.zeros((norb, norb, norb, norb))
-        return
+
+        rf = open("./output/trans.def", "r")
+        lines = rf.readlines()[start:]
+        for line in lines:
+            i, si, j, sj, val = int(line[0]), int(line[1]), int(line[2]), int(line[3]), float(line[4])
+            int1e[i, si, j, sj] = val
+
+        rf = open("./output/coulombintra.def", "r")
+        lines = rf.readlines()[start:]
+        for line in lines:
+            i, val = int(line[0]), float(line[1])
+            int2e[i, i, i, i] = val
+
+        rf = open("./output/coulombinter.def", "r")
+        lines = rf.readlines()[start:]
+        for line in lines:
+            i, j, val = int(line[0]), int(line[1]), float(line[2])
+            int2e[i, i, j, j] = val
+
+        rf = open("./output/exchange.def", "r")
+        lines = rf.readlines()[start:]
+        for line in lines:
+            i, j, val = int(line[0]), int(line[1]), float(line[2])
+            int2e[i, j, j, i] = val
+            int2e[i, j, i, j] = val
+        return int1e, int2e
     
         
             
