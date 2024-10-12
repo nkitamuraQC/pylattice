@@ -81,14 +81,6 @@ class RESPACKController:
     def get_Bmat(self):
         raise NotImplementedError
 
-    def get_bandpath(self):
-        # TMTTF
-        bandpath = [[0.000, 0.500, 0.000], [0.000, 0.000, 0.000],[0.500, 0.000, 0.000],\
-                    [0.500, 0.500, 0.000],[0.000, 0.000, 0.000]]
-        self.bandpath = bandpath
-        assert(self.N_sym_points == len(bandpath))
-        return
-
     def prepare(self):
         self.parse_gauss()
         if self.FLG_BMAT == 1:
