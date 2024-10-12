@@ -45,9 +45,9 @@ class SpaceGroupSupplement:
         cartesian_coords = lattice.get_cartesian_coords(fractional_coords)
         return cartesian_coords
 
-    def supplement_sp(self, spacegroup):
+    def supplement(self):
         atoms = crystal(self.elements, [self.xyz], 
-                        spacegroup=spacegroup,
+                        spacegroup=self.spacegroup,
                         cellpar=self.lattice_param)
         self.atoms = atoms
         return atoms

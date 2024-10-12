@@ -3,7 +3,7 @@ import pathlib, os
 import numpy as np
 
 class LatticeModel_gen:
-    def __init__(self, lat_type, ints_dict, H, W, nelec):
+    def __init__(self, ints_dict, lat_type="chain", H=4, W=1, nelec):
         self.ints_dict = ints_dict
         self.H = H
         self.W = W
@@ -61,6 +61,11 @@ class LatticeModel_gen:
             i, j, val = int(line[0]), int(line[1]), float(line[2])
             int2e[i, j, j, i] = val
             int2e[i, j, i, j] = val
+        return int1e, int2e
+    
+    def do(self):
+        self.drive()
+        int1e, int2e = self.get_ints()
         return int1e, int2e
     
         

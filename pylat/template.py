@@ -1,7 +1,5 @@
 
 chain = """
-W={W}
-L={L}
 model = "Fermion Hubbard"
 lattice = "chain lattice" 
 t = {t1}

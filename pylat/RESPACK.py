@@ -40,13 +40,13 @@ def get_fracCoord(qe_cls, xyz):
     frac = np.dot(tr_mat,xyz)
     return frac
 
-class RESPACK:
-    def __init__(self, qe_cls, workpath, filename, calctype):    
+class RESPACKController:
+    def __init__(self, qe_cls):    
         self.debug = True
-        self.workpath = workpath
+        self.workpath = "./"
         self.qe2respack_path = "/home/users/auv/pyscf/pyscf/pbc/downfolding"
-        self.filename = filename
-        self.calctype = calctype
+        self.filename = "input.in"
+        self.calctype = "calc_wannier"
         self.flg_cRPA = 1
         self.MPI_num_qcomm = 12
         self.N_wannier = 2
@@ -89,7 +89,7 @@ class RESPACK:
         assert(self.N_sym_points == len(bandpath))
         return
 
-    def kernel(self):
+    def prepare(self):
         self.parse_gauss()
         if self.FLG_BMAT == 1:
             self.get_Bmat()
@@ -151,7 +151,7 @@ class RESPACK:
         filename = work + "/" + self.filename
         dir_ = self.qe.prefix + ".save"
         if self.calctype == "calc_wannier":
-            os.system("python {util}/qe2self.py {work}/{dir_}".format(util=util,work=work,dir_=dir_))
+            os.system("python {util}/qe2respack.py {work}/{dir_}".format(util=util,work=work,dir_=dir_))
             os.system("calc_wannier < {filename} > {filename}_wan.out".format(filename=filename))
         elif self.calctype == "calc_chiqw":
             if self.MPI > 1:
