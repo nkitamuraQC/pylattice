@@ -20,8 +20,8 @@ mixing_beta = 0.7,
 conv_thr = 1.0d-8, 
 /
 ATOMIC_SPECIES
-Se  78.96  Se.pbe-dn-kjpaw_psl.1.0.0.UPF 
 Fe  55.845  Fe.pbe-spn-kjpaw_psl.1.0.0.UPF 
+Se  78.96  Se.pbe-dn-kjpaw_psl.1.0.0.UPF 
 ATOMIC_POSITIONS
 Fe  0.0000000000  0.0000000000  0.0000000000 
 Se  0.5000000000  0.5000000000  0.5000000000 
