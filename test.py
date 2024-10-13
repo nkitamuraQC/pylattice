@@ -26,12 +26,16 @@ def test_gen_lat():
     int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict)
     lg.drive()
-    lg.get_ints()
+    int1e, int2e = lg.get_ints()
+    print(int1e[:, 0, :, 0])
+    print(int2e)
+    assert(int2e[0, 0, 0, 0] == 10)
+    assert(int2e[0, 0, 1, 1] == 2)
 
     int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict, lat_type="triangular", H=4, W=4)
     lg.drive()
-    lg.get_ints()
+    int1e, int2e = lg.get_ints()
     return
 
 def test_qe():
