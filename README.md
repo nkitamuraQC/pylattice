@@ -5,6 +5,7 @@ Pylattice is a Python package for a toolkit for first-principle calculations and
 - Supplementation of a crystal structure with it's space group
 - Generation of a lattice model with various shapes (e.g., chain, ladder, kagome, etc)
 - A python controller for Quantum ESPRESSO and RESPACK software packages
+  - Especially, RESPACK controller is under developped
 
 ## Usages
 See test.py
