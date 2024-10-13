@@ -22,19 +22,19 @@ def test_crystal_lattice():
     sgs.write_cif(cifout)
     return
 
-def __test_gen_lat():
-    int_dict = {"t1": 1, "U": 10, "V1": 2}
-    lg = LatticeModel_gen(int_dict, 4)
+def test_gen_lat():
+    int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
+    lg = LatticeModel_gen(int_dict)
     lg.drive()
     lg.get_ints()
 
-    int_dict = {"t1": 1, "U": 10, "V1": 2}
+    int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict, lat_type="triangular", H=4, W=4)
     lg.drive()
     lg.get_ints()
     return
 
-def __test_qe():
+def test_qe():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {"Fe":"Fe.pbe-spn-kjpaw_psl.1.0.0.UPF", "Se":"Se.pbe-dn-kjpaw_psl.1.0.0.UPF"}
     qe = QEController(cifname, pseudo_dict)

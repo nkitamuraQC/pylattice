@@ -49,22 +49,22 @@ class RESPACKController:
         self.calctype = "calc_wannier"
         self.flg_cRPA = 1
         self.MPI_num_qcomm = 12
-        self.N_wannier = 2
+        self.N_wannier = 5
 
         self.Lower_energy_window = "-10.0d0"
         self.Upper_energy_window = "10.0d0"
         self.FLG_BMAT = 0
-        self.N_initial_guess = 2 # 6
+        self.N_initial_guess = 5
         self.gaussian_orb = None
         self.Bmat = None
         self.N_sym_points = 5
-        self.bandpath = None
+        self.bandpath = [[0.500, 0.500, 0.500], [0.000, 0.000, 0.000], [0.500, 0.000, 0.500], [0.500, 0.250, 0.750], [0.500, 0.500, 0.500]]
         self.RESPACK_path = "/home/nkitamura/respack/RESPACK-20190527-dist/"
         self.MPI = 1
         self.qe = qe_cls
         self.num_atom = None
         self.num_mole = None
-        self.gauss = [[0, "px", 0.2]] ## [atom_index, orbital_type, orbital_exp]
+        self.gauss = [[0, "dxy", 0.2], [0, "dyz", 0.2], [0, "dzx", 0.2],  [0, "dz2", 0.2],  [0, "dx2", 0.2]] ## [atom_index, orbital_type, orbital_exp]
         return
 
         
@@ -72,8 +72,8 @@ class RESPACKController:
         gauss_orb = []
         gauss_center = []
         for g in self.gauss:
-            gauss_orb.append([g[0], g[1]])
-            gauss_center.append(self.qe.geoms[g[0]])
+            gauss_orb.append([g[1], g[2]])
+            gauss_center.append(self.qe.geoms[g[0]][1])
         self.gaussian_orb = gauss_orb
         self.gauss_center = gauss_center
         return
@@ -85,7 +85,6 @@ class RESPACKController:
         self.parse_gauss()
         if self.FLG_BMAT == 1:
             self.get_Bmat()
-        self.get_bandpath()
         self.write_inp()
         return 
 
@@ -103,21 +102,18 @@ class RESPACKController:
         txt += "FLG_BMAT={flag}".format(flag=self.FLG_BMAT)+", \n"
         txt += "N_initial_guess={Nguess}".format(Nguess=self.N_initial_guess)+"/ \n"
         for i in range(self.N_initial_guess):
-            basis = self.N_initial_guess // self.N_wannier
-            idx = i // basis
-            type_orb = self.gaussian_orb[0][i]
-            exp_orb = self.gaussian_orb[1][i]
-            coord_x = self.gauss_center[idx, 0]
-            coord_y = self.gauss_center[idx, 1]
-            coord_z = self.gauss_center[idx, 2]
-            txt += type_orb + " " + str(exp_orb) + " " + str(coord_x) \
-                     + " " + str(coord_y) + " " + str(coord_z) + "\n"
+            type_orb = self.gaussian_orb[i][0]
+            exp_orb = self.gaussian_orb[i][1]
+            coord_x = self.gauss_center[i][0]
+            coord_y = self.gauss_center[i][1]
+            coord_z = self.gauss_center[i][2]
+            txt += f"{type_orb} {exp_orb} {coord_x} {coord_y} {coord_z} \n"
     
-        # Bmat
-        for i in range(self.N_initial_guess):
-            for j in range(self.N_wannier):
-                txt += str(self.Bmat[i, j]) + " "
-            txt += "\n"
+        # Future: Bmat
+        #for i in range(self.N_initial_guess):
+        #    for j in range(self.N_wannier):
+        #        txt += str(self.Bmat[i, j]) + " "
+        #    txt += "\n"
     
         txt += "&param_interpolation"+"\n"
         txt += "N_sym_points={npoint}".format(npoint=self.N_sym_points)+"/ \n"

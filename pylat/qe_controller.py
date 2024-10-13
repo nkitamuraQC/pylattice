@@ -9,19 +9,22 @@ class QEController:
         self.filename = "calculation.in"
         self.prefix = "calculation"
         self.calculation = "scf"
-        self.outdir = "./"
-        self.psudo_dir = "./pseudo"
+        self.outdir = "./work"
+        self.pseudo_dir = "./pseudo"
         self.charge = 0
         self.ibrav = 0
-        self.ecutwfc = 30.0,
-        self.ecutrho = 150.0,
+        self.ecutwfc = 30.0
+        self.ecutrho = 150.0
         self.occupations = 'tetrahedra'
         self.mixing_beta = 0.7
         self.conv_thr = "1.0d-8"
+        self.tstress = True
+        self.tprnfor = True
+        self.wf_collect = True
         self.kpoints = [4, 4, 4]
-        self.section = {"&control":["prefix","calculation","outdir","psudo_dir"],\
+        self.section = {"&control":["prefix","calculation","outdir","pseudo_dir","tstress","tprnfor","wf_collect"],\
                         "&system":["ibrav","nat","ntyp","ecutwfc","ecutrho","occupations"],\
-                        "&electron":["mixing_beta","conv_thr"]}
+                        "&electrons":["mixing_beta","conv_thr"]}
         self.pseudo_dict = pseudo_dict
 
         self.geoms = None # [["H",[0,0,0]],..]
@@ -55,7 +58,7 @@ class QEController:
 
         self.geoms = []
         for i in range(len(self.xyz)):
-            self.geoms.append([self.elements[i], self.xyz_cart[i]])
+            self.geoms.append([self.elements[i], self.xyz[i]])
         
         elems = list(set(self.elements))
         self.atoms = []
@@ -69,21 +72,35 @@ class QEController:
 
     def make_input(self, txt=""):
         for k in self.section:
+            print(k)
             txt += k + "\n"
             for a in self.section[k]:
-                txt += a + " = " + self[k] + "\n"
+                if isinstance(self[a], bool) and self[a] == True:
+                    val = ".true."
+                elif isinstance(self[a], bool) and self[a] == False:
+                    val = ".false."
+                else:
+                    val = self[a]            
+                if isinstance(val, str):
+                    if a != "conv_thr" and val != ".true." and val != ".false.":
+                        txt += f"{a} = '{val}', \n"
+                    else:
+                        txt += f"{a} = {val}, \n"
+                else:
+                    txt += f"{a} = {val}, \n"
+
             txt += "/"+"\n"
         txt += "ATOMIC_SPECIES\n"
         for at in self.atoms:
-            txt += at[0] + " " + at[1] + " " + at[2] + "\n"
+            txt += f"{at[0]}  {at[1]}  {at[2]} \n"
         txt += "ATOMIC_POSITIONS\n"
         for at in self.geoms:
-            txt += at[0] + " " + at[1][0] + " " + at[1][1] + " " + at[1][2] + "\n"
+            txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "CELL_PARAMETERS angstrom \n"
         for l in self.lattice:
-            txt += l[0] + " " + l[1] + " " + l[2] + "\n"
+            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
         
-        txt += "K_POINTS {" + "automatic" + "}"
+        txt += "K_POINTS {" + "automatic" + "}\n"
         txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} 0 0 0"
         return txt
 
@@ -114,14 +131,3 @@ class QEController:
         return self.__dict__[key]
     def __setitem__(self, key, value):
         self.__dict__[key] = value
-
-if __name__ == "__main__":
-    geom = ["O",[0.0, 0.0, 0.0],
-            "H",[0.0, 0.0, 1.0],
-            "H",[0.0, 1.0, 0.0]]
-    atoms = [["O","AAA.UPF",32],["H","AAA.UPF",2]]
-    lattice = [[10,0,0],[0,10,0],[0,0,10]]
-    myclass = qe_controller(geom, atoms, lattice)
-    inp = myclass.make_input()
-    myclass.write_input(inp)
-    myclass.exec()

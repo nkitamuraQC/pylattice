@@ -1,17 +1,16 @@
 
-chain = """
-model = "Fermion Hubbard"
+chain = """model = "Fermion Hubbard"
 lattice = "chain lattice" 
+L = {L}
 t = {t1}
 t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """
 
-triangular = """
-W={W}
+triangular = """W={W}
 L={L}
 model = "Fermion Hubbard"
 lattice = "triangular lattice" 
@@ -20,11 +19,10 @@ t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """
 
-square = """
-W={W}
+square = """W={W}
 L={L}
 model = "Fermion Hubbard"
 lattice = "square lattice" 
@@ -33,11 +31,10 @@ t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """
 
-honeycomb = """
-W={W}
+honeycomb = """W={W}
 L={L}
 model = "Fermion Hubbard"
 lattice = "honeycomb lattice" 
@@ -46,11 +43,10 @@ t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """
 
-kagome = """
-W={W}
+kagome = """W={W}
 L={L}
 model = "Fermion Hubbard"
 lattice = "kagome lattice" 
@@ -59,11 +55,10 @@ t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """
 
-ladder = """
-W={W}
+ladder = """W={W}
 L={L}
 model = "Fermion Hubbard"
 lattice = "ladder lattice" 
@@ -72,5 +67,5 @@ t' = {t2}
 U = {U}
 V = {V1} 
 V'= {V2}
-ncond = {nelec}
+nelec = {nelec}
 """

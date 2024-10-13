@@ -1,0 +1,26 @@
+&param_chiqw
+flg_cRPA=1, 
+MPI_num_qcomm=12/ 
+
+&param_wannier
+N_wannier=5, 
+Lower_energy_window=-10.0d0, 
+Upper_energy_window=10.0d0, 
+FLG_BMAT=0, 
+N_initial_guess=5/ 
+dxy 0.2 0.0 0.0 0.0 
+dyz 0.2 0.0 0.0 0.0 
+dzx 0.2 0.0 0.0 0.0 
+dz2 0.2 0.0 0.0 0.0 
+dx2 0.2 0.0 0.0 0.0 
+&param_interpolation
+N_sym_points=5/ 
+0.5 0.5 0.5 
+0.0 0.0 0.0 
+0.5 0.0 0.5 
+0.5 0.25 0.75 
+0.5 0.5 0.5 
+&param_visualization
+/
+&param_calc_int
+/
