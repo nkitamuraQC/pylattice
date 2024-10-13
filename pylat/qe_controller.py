@@ -1,12 +1,8 @@
 import os
 from pymatgen.core import Structure
-from pylat.info import symbol, atomic_weight
+import periodictable
 
-def search(elem):
-    for i, sym in enumerate(symbol):
-        if sym == elem:
-            break
-    return i
+
 
 class QEController:
     def __init__(self, cif, pseudo_dict):
@@ -64,9 +60,9 @@ class QEController:
         elems = list(set(self.elements))
         self.atoms = []
         for elem in elems:
-            number = search(elem)
+            element = periodictable.elements.symbol(elem)
             p = self.pseudo_dict[elem]
-            weight = atomic_weight[number]
+            weight = element.mass
             self.atoms.append([elem, weight, p])
 
         return 
@@ -91,7 +87,7 @@ class QEController:
         txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} 0 0 0"
         return txt
 
-    def write_input(self, inp)
+    def write_input(self, inp):
         wf = open(self.filename, "w")
         wf.write(inp)
         wf.close()

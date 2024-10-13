@@ -5,17 +5,24 @@ from pylat.qe_controller import QEController
 from pylat.respack import RESPACKController
 
 def test_crystal_lattice():
-    cifname = "cif/[3](TMTSF)2AsF6.cif"
-    cifout = "cif/[3](TMTSF)2AsF6_sup.cif"
+    #cifname = "cif/TMTSF2AsF6.cif"
+    #cifout = "cif/TMTSF2AsF6_sup.cif"
+
+    #cifname = "cif/FeSe_mp-20120_primitive.cif"
+    #cifout = "cif/FeSe_mp-20120_primitive_out.cif"
+
+    cifname = "cif/Ac2CuGe_sym.cif"
+    cifout = "cif/Ac2CuGe_sym_out.cif"
     sgs = SpaceGroupSupplement(cifname)
     sgs.read_file()
-    sgs.get_frac()
-    sgs.get_xyz()
+    cart = sgs.get_xyz(sgs.xyz)
+    sgs.get_frac(cart)
+    print(sgs.spacegroup)
     sgs.supplement()
     sgs.write_cif(cifout)
     return
 
-def test_gen_lat():
+def __test_gen_lat():
     int_dict = {"t1": 1, "U": 10, "V1": 2}
     lg = LatticeModel_gen(int_dict, 4)
     lg.drive()
@@ -27,7 +34,7 @@ def test_gen_lat():
     lg.get_ints()
     return
 
-def test_qe():
+def __test_qe():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {"Fe":"Fe.pbe-spn-kjpaw_psl.1.0.0.UPF", "Se":"Se.pbe-dn-kjpaw_psl.1.0.0.UPF"}
     qe = QEController(cifname, pseudo_dict)

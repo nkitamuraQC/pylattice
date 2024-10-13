@@ -46,8 +46,8 @@ class SpaceGroupSupplement:
         return cartesian_coords
 
     def supplement(self):
-        atoms = crystal(self.elements, [self.xyz], 
-                        spacegroup=self.spacegroup,
+        atoms = crystal(self.elements, self.xyz, 
+                        spacegroup=self.spacegroup[0],
                         cellpar=self.lattice_param)
         self.atoms = atoms
         return atoms

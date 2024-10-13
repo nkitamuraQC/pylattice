@@ -3,13 +3,13 @@ import pathlib, os
 import numpy as np
 
 class LatticeModel_gen:
-    def __init__(self, ints_dict, lat_type="chain", H=4, W=1, nelec):
+    def __init__(self, ints_dict, lat_type="chain", H=4, W=1, nelec=2):
         self.ints_dict = ints_dict
         self.H = H
         self.W = W
         self.size_dict = {"H": H, "W": W, "ncond": nelec}
         self.lat_type = lat_type
-        self.vmcdry_path = ""
+        self.vmcdry_path = "/Users/qclove00/mVMC-1.1.0/build/src/mVMC/vmcdry.out"
         self.tmp_dir = pathlib.Path("")
         self.lattice_dict = {"chain": chain, "triangular": triangular,
                              "square": square, "honeycomb": honeycomb,
