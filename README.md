@@ -11,8 +11,10 @@ Pylattice is a Python package for a toolkit for first-principle calculations and
 See test.py
 
 ## Installation
-- install mVMC
+- Install mVMC
   - https://www.pasums.issp.u-tokyo.ac.jp/mvmc/en/
+- Install Qunatum ESPRESSO
+  - https://www.quantum-espresso.org
 
 ```shell
 conda create -n pylattice python=3.9
