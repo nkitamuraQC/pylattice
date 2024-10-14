@@ -1,5 +1,5 @@
 # pylattice
-Pylattice is a Python package for a toolkit for first-principle calculations and lattice-model calculations.
+Pylattice is a Python package for a toolkit of first-principle calculations and lattice-model calculations.
 
 ## Features
 - Supplementation of a crystal structure with it's space group
