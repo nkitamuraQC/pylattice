@@ -124,6 +124,15 @@ class RESPACKController:
             txt += "\n"
     
         txt += "&param_visualization"+"\n"
+        txt += f"flg_vis_wannier=1
+        N_write_wannier={self.n_wannier}
+        ix_vis_min=-1,
+        ix_vis_max= 1, 
+        iy_vis_min=-1
+        iy_vis_max= 1, 
+        iz_vis_min=-1, 
+        iz_vis_max= 1,
+        "
         txt += "/"+"\n"
     
         txt += "&param_calc_int"+"\n"
