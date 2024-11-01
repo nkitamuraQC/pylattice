@@ -116,6 +116,20 @@ class QEController:
         os.system("pw.x {}".format(self.filename))
         return
 
+    def exec_dos(self):
+        txt = """&dos
+        outdir = f'{self.output_dir}',
+        prefix= f'{self.prefix}',
+        fildos= f'{self.prefix}.dos',
+        /
+        """
+        dos = open("dos.in", "w")
+        dos.write(txt)
+        wf.close()
+        os.system("dos.x < dos.in > dos.out")
+        return
+        
+
     def read_hessians(self):
         return
 
