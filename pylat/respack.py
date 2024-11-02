@@ -1,6 +1,7 @@
 #
 import os
 import numpy as np
+from pylat.template_respack import *
 
 def get_volume(qe_cls):
     lattice = qe_cls.lattice
@@ -43,16 +44,17 @@ def get_fracCoord(qe_cls, xyz):
 class RESPACKController:
     def __init__(self, qe_cls):    
         self.debug = True
-        self.workpath = "./"
-        self.qe2respack_path = "/home/users/auv/pyscf/pyscf/pbc/downfolding"
+        self.workpath = qe_cls.outdir
+        self.prefix = qe_cls.prefix
+        self.qe2respack_path = "/Users/qclove00/RESPACK/build/bin"
         self.filename = "input.in"
         self.calctype = "calc_wannier"
         self.flg_cRPA = 1
         self.MPI_num_qcomm = 12
         self.N_wannier = 5
 
-        self.Lower_energy_window = "-10.0d0"
-        self.Upper_energy_window = "10.0d0"
+        self.Lower_energy_window = "11.829"
+        self.Upper_energy_window = "23.989"
         self.FLG_BMAT = 0
         self.N_initial_guess = 5
         self.gaussian_orb = None
@@ -89,18 +91,12 @@ class RESPACKController:
         return 
 
     def write_inp(self):
-        txt = ""
-        filename = self.workpath + "/" + self.filename
-        txt += "&param_chiqw"+"\n"
-        txt += "flg_cRPA={rpa}".format(rpa=self.flg_cRPA)+", \n"
-        txt += "MPI_num_qcomm={mpi}".format(mpi=self.MPI_num_qcomm)+"/ \n"
-        txt += "\n"
-        txt += "&param_wannier"+"\n"
-        txt += "N_wannier={nwan}".format(nwan = self.N_wannier)+", \n"
-        txt += "Lower_energy_window={low}".format(low=self.Lower_energy_window)+", \n"
-        txt += "Upper_energy_window={up}".format(up=self.Upper_energy_window)+", \n"
-        txt += "FLG_BMAT={flag}".format(flag=self.FLG_BMAT)+", \n"
-        txt += "N_initial_guess={Nguess}".format(Nguess=self.N_initial_guess)+"/ \n"
+        txt = template_res1.format(
+            N_wannier = self.N_wannier,
+            lower_e = self.Lower_energy_window,
+            upper_e = self.Upper_energy_window,
+            n_init_guess = self.N_initial_guess,
+        )
         for i in range(self.N_initial_guess):
             type_orb = self.gaussian_orb[i][0]
             exp_orb = self.gaussian_orb[i][1]
@@ -109,35 +105,8 @@ class RESPACKController:
             coord_z = self.gauss_center[i][2]
             txt += f"{type_orb} {exp_orb} {coord_x} {coord_y} {coord_z} \n"
     
-        # Future: Bmat
-        #for i in range(self.N_initial_guess):
-        #    for j in range(self.N_wannier):
-        #        txt += str(self.Bmat[i, j]) + " "
-        #    txt += "\n"
-    
-        txt += "&param_interpolation"+"\n"
-        txt += "N_sym_points={npoint}".format(npoint=self.N_sym_points)+"/ \n"
-        bandpath = self.bandpath
-        for i in range(self.N_sym_points):
-            for j in range(3):
-                txt += str(bandpath[i][j])+" "
-            txt += "\n"
-    
-        txt += "&param_visualization"+"\n"
-        txt += f"""flg_vis_wannier=1
-N_write_wannier={self.N_wannier}
-ix_vis_min=-1,
-ix_vis_max= 1, 
-iy_vis_min=-1
-iy_vis_max= 1, 
-iz_vis_min=-1, 
-iz_vis_max= 1,
-        """
-        txt += "/"+"\n"
-    
-        txt += "&param_calc_int"+"\n"
-        txt += "/"+"\n"
-        wf = open(filename, "w")
+        txt += template_res2
+        wf = open(self.filename, "w")
         wf.write(txt)
         wf.close()
         return 
@@ -145,11 +114,10 @@ iz_vis_max= 1,
     def execution(self):
         util = self.qe2respack_path
         work = self.workpath
-        filename = work + "/" + self.filename
-        dir_ = self.qe.prefix + ".save"
+        filename = self.filename
         if self.calctype == "calc_wannier":
-            os.system("python {util}/qe2respack.py {work}/{dir_}".format(util=util,work=work,dir_=dir_))
-            os.system("calc_wannier < {filename} > {filename}_wan.out".format(filename=filename))
+            os.system("python {util}/qe2respack.py {work}/{prefix}.save".format(util=util, work=work, prefix=self.prefix))
+            os.system("{util}/calc_wannier < {filename} > {filename}_wan.out".format(util=util, filename=filename))
         elif self.calctype == "calc_chiqw":
             if self.MPI > 1:
                 os.system("OMP_NUM_THREADS=1 mpirun -np {MPI} calc_chiqw < {filename} > {filename}_chi.out".format(filename=filename,MPI=self.MPI))

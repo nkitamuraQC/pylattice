@@ -62,11 +62,15 @@ class QEController:
         
         elems = list(set(self.elements))
         self.atoms = []
+        save = []
         for elem in elems:
+            if elem in save:
+                continue
             element = periodictable.elements.symbol(elem)
             p = self.pseudo_dict[elem]
             weight = element.mass
             self.atoms.append([elem, weight, p])
+            save.append(elem)
 
         return 
 

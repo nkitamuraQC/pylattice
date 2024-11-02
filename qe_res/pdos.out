@@ -1,5 +1,5 @@
 
-     Program PROJWFC v.7.1 starts on  2Nov2024 at 15:54:54 
+     Program PROJWFC v.7.1 starts on  2Nov2024 at 17:39:14 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -812,7 +812,7 @@ Lowdin Charges:
      PROJWFC      :      0.82s CPU      0.86s WALL
 
 
-   This run was terminated on:  15:54:55   2Nov2024            
+   This run was terminated on:  17:39:15   2Nov2024            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

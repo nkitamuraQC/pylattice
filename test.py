@@ -50,6 +50,7 @@ def test_qe():
 
     res = RESPACKController(qe)
     res.prepare()
+    res.execution()
     return
 
 if __name__ == "__main__":
