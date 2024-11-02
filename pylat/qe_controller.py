@@ -62,11 +62,15 @@ class QEController:
         
         elems = list(set(self.elements))
         self.atoms = []
+        save = []
         for elem in elems:
+            if elem in save:
+                continue
             element = periodictable.elements.symbol(elem)
             p = self.pseudo_dict[elem]
             weight = element.mass
             self.atoms.append([elem, weight, p])
+            save.append(elem)
 
         return 
 
@@ -117,16 +121,28 @@ class QEController:
         return
 
     def exec_dos(self):
-        txt = """&dos
-        outdir = f'{self.output_dir}',
-        prefix= f'{self.prefix}',
-        fildos= f'{self.prefix}.dos',
-        /
+        txt = f"""&dos
+    outdir = '{self.outdir}',
+    prefix= '{self.prefix}',
+    fildos= '{self.prefix}.dos',
+/
         """
         dos = open("dos.in", "w")
         dos.write(txt)
-        wf.close()
+        dos.close()
         os.system("dos.x < dos.in > dos.out")
+        return
+    
+    def exec_pdos(self):
+        txt = f"""&projwfc
+    outdir = '{self.outdir}',
+    prefix= '{self.prefix}',
+/
+        """
+        dos = open("pdos.in", "w")
+        dos.write(txt)
+        dos.close()
+        os.system("projwfc.x < pdos.in > pdos.out")
         return
         
 
