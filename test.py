@@ -45,8 +45,13 @@ def test_qe():
     inp = qe.make_input()
     qe.write_input(inp)
     ## qe.exec()
+    qe.exec_dos()
+    qe.exec_pdos()
 
     res = RESPACKController(qe)
     res.prepare()
     return
+
+if __name__ == "__main__":
+    test_qe()
 
