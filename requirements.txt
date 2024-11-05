@@ -1,4 +1,4 @@
 ase
 pymatgen
 periodictable
-numpy==1.20
+numpy
