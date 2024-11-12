@@ -144,7 +144,9 @@ class QEController:
         dos.close()
         os.system("projwfc.x < pdos.in > pdos.out")
         return
-        
+
+    def do_wan90(self):
+        return
 
     def read_hessians(self):
         return
