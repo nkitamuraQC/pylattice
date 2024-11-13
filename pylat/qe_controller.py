@@ -1,6 +1,7 @@
 import os
 from pymatgen.core import Structure
 import periodictable
+from pylat.wan90_template import *
 
 
 
@@ -145,7 +146,10 @@ class QEController:
         os.system("projwfc.x < pdos.in > pdos.out")
         return
 
-    def do_wan90(self):
+    def do_wan90(self, nb, nw, a, b):
+        txt = ""
+        txt += wan90_temp0.format(nb=nb, nw=nw, a=a, b=b)
+        
         return
 
     def read_hessians(self):
