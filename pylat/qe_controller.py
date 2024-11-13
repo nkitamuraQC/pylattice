@@ -148,7 +148,7 @@ class QEController:
         os.system("projwfc.x < pdos.in > pdos.out")
         return
 
-    def do_wan90(self, nb, nw, a, b):
+    def write_wan90(self, nb, nw, a, b):
         self.parse_gauss()
         txt = ""
         txt += wan90_temp0.format(nb=nb, nw=nw, a=a, b=b)
@@ -184,6 +184,14 @@ class QEController:
                     txt += f"{kx} {ky} {kz}\n"
             
         txt += "end kpoints \n"
+        wf = open(f"{self.prefix}.win.in", "w")
+        wf.write(txt)
+        wf.close()
+
+        txt = wan90_pw2wan.format(prefix=self.prefix, outdir=self.outdir)
+        wf = open(f"{self.prefix}.pw2wan.in", "w")
+        wf.write(txt)
+        wf.close()
         return
 
     def parse_gauss(self):
@@ -194,6 +202,12 @@ class QEController:
             gauss_center.append(self.geoms[g[0]][1])
         self.gaussian_orb = gauss_orb
         self.gauss_center = gauss_center
+        return
+
+    def do_wan90(self):
+        os.system(f"wannier90.x -pp {self.prefix}")
+        os.system(f"pw2wannier90.x < {self.prefix}.pw2wan.in > {self.prefix}.pw2wan.out")
+        os.system(f"wannier90.x {self.prefix}")
         return
 
     def read_hessians(self):
