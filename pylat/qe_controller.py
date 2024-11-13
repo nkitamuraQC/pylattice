@@ -2,7 +2,7 @@ import os
 from pymatgen.core import Structure
 import periodictable
 from pylat.wan90_template import *
-
+import numpy as np
 
 
 class QEController:
@@ -172,6 +172,18 @@ class QEController:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "end atoms_frac \n"
         txt += wan90_temp2.format(nkx=self.kpoints[0], nky=self.kpoints[1], nkz=self.kpoints[2])
+
+        kxs = np.linspace(0, 1, self.kpoints[0])
+        kys = np.linspace(0, 1, self.kpoints[1])
+        kzs = np.linspace(0, 1, self.kpoints[2])
+
+        txt += "begin kpoints \n"
+        for kx in kxs:
+            for ky in kys:
+                for kz in kzs:
+                    txt += f"{kx} {ky} {kz}\n"
+            
+        txt += "end kpoints \n"
         return
 
     def parse_gauss(self):
