@@ -16,3 +16,10 @@ end kpoint_path
 wan90_temp2 = """
 mp_grid = {nkx} {nky} {nkz}
 """
+
+wan90_pw2wan = """&inputpp
+    outdir='{outdir}'
+    prefix='{prefix}',
+    seedname = '{prefix}'
+/
+"""
