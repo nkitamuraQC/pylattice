@@ -24,9 +24,10 @@ class QEController:
         self.wf_collect = True
         self.kpoints = [4, 4, 4]
         self.section = {"&control":["prefix","calculation","outdir","pseudo_dir","tstress","tprnfor","wf_collect"],\
-                        "&system":["ibrav","nat","ntyp","ecutwfc","ecutrho","occupations"],\
+                        "&system":["ibrav","nat","ntyp","ecutwfc","ecutrho","occupations","nbnd"],\
                         "&electrons":["mixing_beta","conv_thr"]}
         self.pseudo_dict = pseudo_dict
+        self.nbnd = None
 
         self.geoms = None # [["H",[0,0,0]],..]
         self.atoms = None # [["H",mass,psudo]]
@@ -94,6 +95,8 @@ class QEController:
                     else:
                         txt += f"{a} = {val}, \n"
                 else:
+                    txt += f"{a} = {val}, \n"
+                if a == "nbnd" and self.calculation == "nscf":
                     txt += f"{a} = {val}, \n"
 
             txt += "/"+"\n"
