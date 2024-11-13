@@ -36,6 +36,8 @@ class QEController:
 
         self.nat = len(self.geoms)
         self.ntyp = len(self.atoms)
+        self.gauss = [[0, "dxy", 0.2], [0, "dyz", 0.2], [0, "dzx", 0.2],  [0, "dz2", 0.2],  [0, "dx2", 0.2]]
+        self.N_initial_guess = 4
 
     def read_file(self, ciffile):
         structure = Structure.from_file(ciffile)
@@ -147,9 +149,39 @@ class QEController:
         return
 
     def do_wan90(self, nb, nw, a, b):
+        self.parse_gauss()
         txt = ""
         txt += wan90_temp0.format(nb=nb, nw=nw, a=a, b=b)
-        
+        txt += "begin projections \n"
+        for i in range(self.N_initial_guess):
+            type_orb = self.gaussian_orb[i][0]
+            exp_orb = self.gaussian_orb[i][1]
+            coord_x = self.gauss_center[i][0]
+            coord_y = self.gauss_center[i][1]
+            coord_z = self.gauss_center[i][2]
+            txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
+        txt += "end projections \n"
+        txt += wan90_temp1 
+        txt += "begin unit_cell_cart \n"
+        txt += "bohr \n"
+        for l in self.lattice:
+            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
+        txt += "end unit_cell_cart \n"
+        txt += "begin atoms_frac \n"
+        for at in self.geoms:
+            txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
+        txt += "end atoms_frac \n"
+        txt += wan90_temp2.format(nkx=self.kpoints[0], nky=self.kpoints[1], nkz=self.kpoints[2])
+        return
+
+    def parse_gauss(self):
+        gauss_orb = []
+        gauss_center = []
+        for g in self.gauss:
+            gauss_orb.append([g[1], g[2]])
+            gauss_center.append(self.geoms[g[0]][1])
+        self.gaussian_orb = gauss_orb
+        self.gauss_center = gauss_center
         return
 
     def read_hessians(self):
