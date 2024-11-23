@@ -4,6 +4,7 @@ import periodictable
 import numpy as np
 import pathlib
 
+
 def get_section(occ):
     if "tetrahedra" in occ:
         section = {
@@ -50,7 +51,7 @@ def get_section(occ):
                 "nosym",
                 "noinv",
                 "smearing",
-                "degauss"
+                "degauss",
             ],
             "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
         }
@@ -79,11 +80,11 @@ class QEController:
         self.noinv = False
         self.kpoints = [4, 4, 4]
         self.crystal_kpoint = False
-        self.smearing = 'fd'
+        self.smearing = "fd"
         self.degauss = 0.07
         self.offset = [0, 0, 0]
         self.electron_maxstep = 200
-        
+
         self.pseudo_dict = pseudo_dict
         self.nbnd = None
 
@@ -105,9 +106,9 @@ class QEController:
         self.N_initial_guess = 5
 
     def get_kpoint(self):
-        dx = 1/self.kpoints[0]
-        dy = 1/self.kpoints[1]
-        dz = 1/self.kpoints[2]
+        dx = 1 / self.kpoints[0]
+        dy = 1 / self.kpoints[1]
+        dz = 1 / self.kpoints[2]
 
         kxs = [dx * i for i in range(self.kpoints[0])]
         kys = [dy * i for i in range(self.kpoints[1])]
@@ -185,13 +186,13 @@ class QEController:
         txt += "CELL_PARAMETERS angstrom \n"
         for l in self.lattice:
             txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
-        
+
         if not self.crystal_kpoint:
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
         else:
             txt += "K_POINTS crystal \n"
-            nk = self.kpoints[0]*self.kpoints[1]*self.kpoints[2]
+            nk = self.kpoints[0] * self.kpoints[1] * self.kpoints[2]
             txt += f"{nk} \n"
             kxs, kys, kzs, w = self.get_kpoint()
             for kx in kxs:
@@ -220,8 +221,8 @@ class QEController:
     fildos= '{self.prefix}.dos',
 /
         """
-        #dos = open(str(self.input_folder.joinpath("dos.in")), "w")
-        #dos_out = str(self.input_folder.joinpath("dos.out"))
+        # dos = open(str(self.input_folder.joinpath("dos.in")), "w")
+        # dos_out = str(self.input_folder.joinpath("dos.out"))
         dos = open("dos.in", "w")
         dos_out = "dos.out"
         dos.write(txt)
@@ -235,8 +236,8 @@ class QEController:
     prefix= '{self.prefix}',
 /
         """
-        #dos = open(str(self.input_folder.joinpath("pdos.in")), "w")
-        #dos_out = str(self.input_folder.joinpath("pdos.out"))
+        # dos = open(str(self.input_folder.joinpath("pdos.in")), "w")
+        # dos_out = str(self.input_folder.joinpath("pdos.out"))
         dos = open("pdos.in", "w")
         dos_out = "pdos.out"
         dos.write(txt)

@@ -4,12 +4,13 @@ from pylat.lattice_model import LatticeModel_gen
 from pylat.qe_controller import QEController
 from pylat.respack import RESPACKController
 
-def test_crystal_lattice():
-    #cifname = "cif/TMTSF2AsF6.cif"
-    #cifout = "cif/TMTSF2AsF6_sup.cif"
 
-    #cifname = "cif/FeSe_mp-20120_primitive.cif"
-    #cifout = "cif/FeSe_mp-20120_primitive_out.cif"
+def test_crystal_lattice():
+    # cifname = "cif/TMTSF2AsF6.cif"
+    # cifout = "cif/TMTSF2AsF6_sup.cif"
+
+    # cifname = "cif/FeSe_mp-20120_primitive.cif"
+    # cifout = "cif/FeSe_mp-20120_primitive_out.cif"
 
     cifname = "cif/Ac2CuGe_sym.cif"
     cifout = "cif/Ac2CuGe_sym_out.cif"
@@ -22,6 +23,7 @@ def test_crystal_lattice():
     sgs.write_cif(cifout)
     return
 
+
 def test_gen_lat():
     int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict)
@@ -29,8 +31,8 @@ def test_gen_lat():
     int1e, int2e = lg.get_ints()
     print(int1e[:, 0, :, 0])
     print(int2e)
-    assert(int2e[0, 0, 0, 0] == 10)
-    assert(int2e[0, 0, 1, 1] == 2)
+    assert int2e[0, 0, 0, 0] == 10
+    assert int2e[0, 0, 1, 1] == 2
 
     int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict, lat_type="triangular", H=4, W=4)
@@ -38,9 +40,13 @@ def test_gen_lat():
     int1e, int2e = lg.get_ints()
     return
 
+
 def test_qe():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
-    pseudo_dict = {"Fe":"Fe.pbe-spn-kjpaw_psl.1.0.0.UPF", "Se":"Se.pbe-dn-kjpaw_psl.1.0.0.UPF"}
+    pseudo_dict = {
+        "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
+        "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
+    }
     qe = QEController(cifname, pseudo_dict)
     inp = qe.make_input()
     qe.write_input(inp)
@@ -53,20 +59,24 @@ def test_qe():
     res.execution()
     return
 
+
 def test_wan90():
     cifname = "./cif/FeSe_mp-20120_primitive.cif"
-    pseudo_dict = {"Fe":"Fe.pbe-spn-kjpaw_psl.1.0.0.UPF", "Se":"Se.pbe-dn-kjpaw_psl.1.0.0.UPF"}
+    pseudo_dict = {
+        "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
+        "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
+    }
     qe = QEController(cifname, pseudo_dict)
     inp = qe.make_input()
     qe.write_input(inp)
     qe.exec()
-    #qe.exec_dos()
-    #qe.exec_pdos()
+    # qe.exec_dos()
+    # qe.exec_pdos()
 
-    #qe.write_wan90(win_min="1.1049d01", win_max="1.8929d01", nw=5)
-    #qe.do_wan90()
+    # qe.write_wan90(win_min="1.1049d01", win_max="1.8929d01", nw=5)
+    # qe.do_wan90()
     return
+
 
 if __name__ == "__main__":
     test_wan90()
-

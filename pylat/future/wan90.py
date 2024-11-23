@@ -1,6 +1,7 @@
 from pylat.future.wan90_template import *
 import os
 
+
 class Wannier90:
     def __init__(self, qe_ctrl):
         self.qe_ctrl = qe_ctrl
@@ -13,7 +14,9 @@ class Wannier90:
                     print(f"Number of Kohn-Sham states (bands): {band_count}")
         self.qe_ctrl.parse_gauss()
         txt = ""
-        txt += wan90_temp0.format(nb=band_count, nw=nw, dis_win_min=win_min, dis_win_max=win_max)
+        txt += wan90_temp0.format(
+            nb=band_count, nw=nw, dis_win_min=win_min, dis_win_max=win_max
+        )
         txt += "begin projections \n"
         txt += ""
         for i in range(self.qe_ctrl.N_initial_guess):
@@ -34,7 +37,9 @@ class Wannier90:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "end atoms_frac \n"
         txt += wan90_temp2.format(
-            nkx=self.qe_ctrl.kpoints[0], nky=self.qe_ctrl.kpoints[1], nkz=self.qe_ctrl.kpoints[2]
+            nkx=self.qe_ctrl.kpoints[0],
+            nky=self.qe_ctrl.kpoints[1],
+            nkz=self.qe_ctrl.kpoints[2],
         )
 
         kxs, kys, kzs, w = self.qe_ctrl.get_kpoint()
@@ -51,7 +56,11 @@ class Wannier90:
         wf.write(txt)
         wf.close()
 
-        txt = wan90_pw2wan.format(prefix=self.qe_ctrl.prefix, outdir=self.qe_ctrl.outdir, win=f"{self.qe_ctrl.prefix}.win")
+        txt = wan90_pw2wan.format(
+            prefix=self.qe_ctrl.prefix,
+            outdir=self.qe_ctrl.outdir,
+            win=f"{self.qe_ctrl.prefix}.win",
+        )
         wf = open(f"{self.qe_ctrl.prefix}.pw2wan.in", "w")
         wf.write(txt)
         wf.close()
@@ -71,8 +80,6 @@ class Wannier90:
         os.system(f"wannier90.x -pp {self.prefix}")
         pw2wan_in = f"{self.qe_ctrl.prefix}.pw2wan.in"
         pw2wan_out = f"{self.qe_ctrl.prefix}.pw2wan.out"
-        os.system(
-            f"pw2wannier90.x < {pw2wan_in} > {pw2wan_out}"
-        )
-        #os.system(f"wannier90.x {self.prefix}")
+        os.system(f"pw2wannier90.x < {pw2wan_in} > {pw2wan_out}")
+        # os.system(f"wannier90.x {self.prefix}")
         return
