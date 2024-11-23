@@ -26,7 +26,7 @@ def get_section(occ):
                 "nosym",
                 "noinv",
             ],
-            "&electrons": ["mixing_beta", "conv_thr"],
+            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
         }
 
     elif occ == "smearing":
@@ -52,7 +52,7 @@ def get_section(occ):
                 "smearing",
                 "degauss"
             ],
-            "&electrons": ["mixing_beta", "conv_thr"],
+            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
         }
     return section
 
@@ -75,13 +75,14 @@ class QEController:
         self.tstress = True
         self.tprnfor = True
         self.wf_collect = True
-        self.nosym = True
-        self.noinv = True
+        self.nosym = False
+        self.noinv = False
         self.kpoints = [4, 4, 4]
         self.crystal_kpoint = False
         self.smearing = 'fd'
         self.degauss = 0.07
         self.offset = [0, 0, 0]
+        self.electron_maxstep = 200
         
         self.pseudo_dict = pseudo_dict
         self.nbnd = None

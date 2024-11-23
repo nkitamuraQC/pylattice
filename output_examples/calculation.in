@@ -14,12 +14,13 @@ ntyp = 2,
 ecutwfc = 30.0, 
 ecutrho = 150.0, 
 occupations = 'tetrahedra', 
-nosym = .true., 
-noinv = .true., 
+nosym = .false., 
+noinv = .false., 
 /
 &electrons
 mixing_beta = 0.7, 
 conv_thr = 1.0d-8, 
+electron_maxstep = 200, 
 /
 ATOMIC_SPECIES
 Fe  55.845  Fe.pbe-spn-kjpaw_psl.1.0.0.UPF 
