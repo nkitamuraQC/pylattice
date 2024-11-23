@@ -73,7 +73,6 @@ class RESPACKController:
             [0.500, 0.250, 0.750],
             [0.500, 0.500, 0.500],
         ]
-        self.RESPACK_path = "/home/nkitamura/respack/RESPACK-20190527-dist/"
         self.MPI = 1
         self.qe = qe_cls
         self.num_atom = None
