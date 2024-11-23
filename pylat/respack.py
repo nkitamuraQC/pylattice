@@ -53,8 +53,8 @@ class RESPACKController:
         self.MPI_num_qcomm = 12
         self.N_wannier = 5
 
-        self.Lower_energy_window = "11.829"
-        self.Upper_energy_window = "23.989"
+        self.Lower_energy_window = "1.1049d01"
+        self.Upper_energy_window = "1.8929d01"
         self.FLG_BMAT = 0
         self.N_initial_guess = 5
         self.gaussian_orb = None
