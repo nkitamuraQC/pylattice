@@ -1,7 +1,6 @@
 import os
 from pymatgen.core import Structure
 import periodictable
-from pylat.wan90_template import *
 import numpy as np
 import pathlib
 
@@ -59,17 +58,13 @@ def get_section(occ):
 
 
 class QEController:
-    def __init__(self, cif, pseudo_dict, input_folder="output_examples"):
-        self.input_folder = input_folder
-        #self.filename = str(self.input_folder.joinpath("calculation.in"))
-        #self.log = str(self.input_folder.joinpath("calculation.out"))
+    def __init__(self, cif, pseudo_dict):
         self.filename = "calculation.in"
         self.log = "calculation.out"
         self.prefix = "calculation"
         self.calculation = "scf"
-        #self.outdir = self.input_folder.joinpath("./work")
         self.outdir = "./work"
-        self.pseudo_dir = "../pseudo"
+        self.pseudo_dir = "./pseudo"
         self.charge = 0
         self.ibrav = 0
         self.ecutwfc = 30.0
@@ -246,81 +241,6 @@ class QEController:
         dos.write(txt)
         dos.close()
         os.system(f"projwfc.x < {dos} > {dos_out}")
-        return
-
-    def write_wan90(self, win_min, win_max, nw=5):
-        with open(self.log, "r") as file:
-            for line in file:
-                if "number of Kohn-Sham states" in line:
-                    band_count = int(line.split("=")[1].strip())
-                    print(f"Number of Kohn-Sham states (bands): {band_count}")
-        self.parse_gauss()
-        txt = ""
-        txt += wan90_temp0.format(nb=band_count, nw=nw, dis_win_min=win_min, dis_win_max=win_max)
-        txt += "begin projections \n"
-        txt += ""
-        for i in range(self.N_initial_guess):
-            type_orb = self.gaussian_orb[i][0]
-            coord_x = self.gauss_center[i][0]
-            coord_y = self.gauss_center[i][1]
-            coord_z = self.gauss_center[i][2]
-            txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
-        txt += "end projections \n"
-        txt += wan90_temp1
-        txt += "begin unit_cell_cart \n"
-        txt += "angstrom \n"
-        for l in self.lattice:
-            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
-        txt += "end unit_cell_cart \n"
-        txt += "begin atoms_frac \n"
-        for at in self.geoms:
-            txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
-        txt += "end atoms_frac \n"
-        txt += wan90_temp2.format(
-            nkx=self.kpoints[0], nky=self.kpoints[1], nkz=self.kpoints[2]
-        )
-
-        kxs, kys, kzs, w = self.get_kpoint()
-
-        txt += "begin kpoints \n"
-        for kx in kxs:
-            for ky in kys:
-                for kz in kzs:
-                    txt += f"{kx} {ky} {kz}\n"
-
-        txt += "end kpoints \n"
-        win_in = f"{self.prefix}.win"
-        wf = open(win_in, "w")
-        wf.write(txt)
-        wf.close()
-
-        txt = wan90_pw2wan.format(prefix=self.prefix, outdir=self.outdir, win=f"{self.prefix}.win")
-        wf = open(f"{self.prefix}.pw2wan.in", "w")
-        wf.write(txt)
-        wf.close()
-        return
-
-    def parse_gauss(self):
-        gauss_orb = []
-        gauss_center = []
-        for g in self.gauss:
-            gauss_orb.append([g[1], g[2]])
-            gauss_center.append(self.geoms[g[0]][1])
-        self.gaussian_orb = gauss_orb
-        self.gauss_center = gauss_center
-        return
-
-    def do_wan90(self):
-        os.system(f"wannier90.x -pp {self.prefix}")
-        pw2wan_in = f"{self.prefix}.pw2wan.in"
-        pw2wan_out = f"{self.prefix}.pw2wan.out"
-        os.system(
-            f"pw2wannier90.x < {pw2wan_in} > {pw2wan_out}"
-        )
-        #os.system(f"wannier90.x {self.prefix}")
-        return
-
-    def read_hessians(self):
         return
 
     def __len__(self):

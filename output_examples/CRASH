@@ -1,7 +1,7 @@
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      task #         0
-     from pw2wannier90 : error #         3
-     problems with k-points
+     from readpp : error #         1
+     file ./pseudo/Fe.pbe-spn-kjpaw_psl.1.0.0.UPF not found
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

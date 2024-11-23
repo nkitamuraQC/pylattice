@@ -2,7 +2,7 @@
 prefix = 'calculation', 
 calculation = 'scf', 
 outdir = './work', 
-pseudo_dir = '../pseudo', 
+pseudo_dir = './pseudo', 
 tstress = .true., 
 tprnfor = .true., 
 wf_collect = .true., 
