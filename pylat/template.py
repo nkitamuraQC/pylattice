@@ -1,4 +1,3 @@
-
 chain = """model = "Fermion Hubbard"
 lattice = "chain lattice" 
 L = {L}

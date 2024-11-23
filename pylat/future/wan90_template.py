@@ -1,6 +1,8 @@
 wan90_temp0 = """num_bands         =   {nb}
 num_wann          =   {nw}
-exclude_bands={a}-{b}
+
+dis_win_max =  {dis_win_max}
+dis_win_min =  {dis_win_min}
 """
 
 wan90_temp1 = """
@@ -20,6 +22,6 @@ mp_grid = {nkx} {nky} {nkz}
 wan90_pw2wan = """&inputpp
     outdir='{outdir}'
     prefix='{prefix}',
-    seedname = '{prefix}'
+    seedname='{prefix}',
 /
 """

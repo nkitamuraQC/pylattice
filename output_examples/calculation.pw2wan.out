@@ -1,0 +1,70 @@
+
+     Program PW2WANNIER v.7.1 starts on 23Nov2024 at 18:37:57 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 29 465901 (2017);
+         "P. Giannozzi et al., J. Chem. Phys. 152 154105 (2020);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on     1 processors
+
+     MPI processes distributed on     1 nodes
+     0 MiB available memory on the printing compute node when the environment starts
+
+
+  Reading nscf_save data
+
+     Reading xml data from directory:
+
+     ./work/calculation.save/
+     file Fe.pbe-spn-kjpaw_psl.1.0.0.UPF: wavefunction(s)  3P 3D renormalized
+     file Se.pbe-dn-kjpaw_psl.1.0.0.UPF: wavefunction(s)  4S 4P 3D renormalized
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation= PBE
+                           (   1   4   3   4   0   0   0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+
+     G-vector sticks info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Sum         401     317    109                 5887     4169     847
+
+     Using Slab Decomposition
+
+
+     Check: negative core charge=   -0.000042
+
+     negative rho (up, down):  1.175E-01 0.000E+00
+     read_file_new: Wavefunctions not in collected format?!?
+     read_file: Wavefunctions in collected format not available
+
+  Spin CASE ( default = unpolarized )
+
+  Wannier mode is: standalone     
+
+  -----------------
+  *** Reading nnkp 
+  -----------------
+
+  Checking info from wannier.nnkp file
+
+  - Real lattice is ok
+  - Reciprocal lattice is ok
+  Something wrong! 
+  k-point            3  is wrong
+   0.0000000000000000        0.0000000000000000       0.49999999999999178     
+   0.0000000000000000        0.0000000000000000      -0.50000000000000000     
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine pw2wannier90 (3):
+     problems with k-points
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+     stopping ...

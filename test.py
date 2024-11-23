@@ -53,6 +53,20 @@ def test_qe():
     res.execution()
     return
 
+def test_wan90():
+    cifname = "../cif/FeSe_mp-20120_primitive.cif"
+    pseudo_dict = {"Fe":"Fe.pbe-spn-kjpaw_psl.1.0.0.UPF", "Se":"Se.pbe-dn-kjpaw_psl.1.0.0.UPF"}
+    qe = QEController(cifname, pseudo_dict)
+    inp = qe.make_input()
+    qe.write_input(inp)
+    qe.exec()
+    #qe.exec_dos()
+    #qe.exec_pdos()
+
+    qe.write_wan90(win_min="1.1049d01", win_max="1.8929d01", nw=5)
+    qe.do_wan90()
+    return
+
 if __name__ == "__main__":
-    test_qe()
+    test_wan90()
 

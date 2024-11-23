@@ -2,7 +2,7 @@
 prefix = 'calculation', 
 calculation = 'scf', 
 outdir = './work', 
-pseudo_dir = './pseudo', 
+pseudo_dir = '../pseudo', 
 tstress = .true., 
 tprnfor = .true., 
 wf_collect = .true., 
@@ -14,7 +14,8 @@ ntyp = 2,
 ecutwfc = 30.0, 
 ecutrho = 150.0, 
 occupations = 'tetrahedra', 
-nbnd = None, 
+nosym = .true., 
+noinv = .true., 
 /
 &electrons
 mixing_beta = 0.7, 

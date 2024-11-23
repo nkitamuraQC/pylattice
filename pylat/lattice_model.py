@@ -2,6 +2,7 @@ from pylat.template import *
 import pathlib, os
 import numpy as np
 
+
 class LatticeModel_gen:
     def __init__(self, ints_dict, lat_type="chain", H=4, W=1, nelec=2):
         self.ints_dict = ints_dict
@@ -11,9 +12,14 @@ class LatticeModel_gen:
         self.lat_type = lat_type
         self.vmcdry_path = "/Users/qclove00/mVMC-1.1.0/build/src/mVMC/vmcdry.out"
         self.tmp_dir = "./output"
-        self.lattice_dict = {"chain": chain, "triangular": triangular,
-                             "square": square, "honeycomb": honeycomb,
-                             "ladder": ladder, "kagome": kagome}
+        self.lattice_dict = {
+            "chain": chain,
+            "triangular": triangular,
+            "square": square,
+            "honeycomb": honeycomb,
+            "ladder": ladder,
+            "kagome": kagome,
+        }
 
     def drive(self):
         os.system(f"rm -r {self.tmp_dir}")
@@ -22,7 +28,7 @@ class LatticeModel_gen:
         self.ints_dict.update(self.size_dict)
         temp = self.lattice_dict[self.lat_type]
         temp = temp.format(**self.ints_dict)
-        #name = str(pathlib.Path(self.tmp_dir).joinpath("tmp.in"))
+        # name = str(pathlib.Path(self.tmp_dir).joinpath("tmp.in"))
         name = "tmp.in"
         wf = open(name, "w")
         wf.write(temp)
@@ -46,7 +52,13 @@ class LatticeModel_gen:
         lines = rf.readlines()[start:]
         for line_ in lines:
             line = line_.split()
-            i, si, j, sj, val = int(line[0]), int(line[1]), int(line[2]), int(line[3]), float(line[4])
+            i, si, j, sj, val = (
+                int(line[0]),
+                int(line[1]),
+                int(line[2]),
+                int(line[3]),
+                float(line[4]),
+            )
             int1e[i, si, j, sj] = val
 
         rf = open("./output/coulombintra.def", "r")
@@ -62,23 +74,18 @@ class LatticeModel_gen:
             line = line_.split()
             i, j, val = int(line[0]), int(line[1]), float(line[2])
             int2e[i, i, j, j] = val
-        
+
         ### Future: exchange
-        #rf = open("./output/exchange.def", "r")
-        #lines = rf.readlines()[start:]
-        #for line_ in lines:
+        # rf = open("./output/exchange.def", "r")
+        # lines = rf.readlines()[start:]
+        # for line_ in lines:
         #    line = line_.split()
         #    i, j, val = int(line[0]), int(line[1]), float(line[2])
         #    int2e[i, j, j, i] = val
         #    int2e[i, j, i, j] = val
         return int1e, int2e
-    
+
     def do(self):
         self.drive()
         int1e, int2e = self.get_ints()
         return int1e, int2e
-    
-        
-            
-            
-        

@@ -1,0 +1,5 @@
+&inputpp
+    outdir='./work'
+    prefix='calculation',
+    seedname='calculation',
+/
