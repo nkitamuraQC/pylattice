@@ -8,7 +8,7 @@ class MD_Properties:
         return
 
 
-    def get_young(self):
+    def get_young(self, targets_list=None):
         return
     
 
