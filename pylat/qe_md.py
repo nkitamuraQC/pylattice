@@ -12,7 +12,8 @@ class QEMD:
         dL=np.zeros((3, 3)),
         temp=300,
         macro_step=10,
-        nkpoints = [4, 4, 4], 
+        nkpoints = [4, 4, 4],
+        press = None, 
     ):
         self.qe_ctrl = qe_ctrl
         self.dL = dL
@@ -23,6 +24,7 @@ class QEMD:
         self.dt = dt
         self.nkpoints = nkpoints
         self.default_lattice = copy.copy(self.qe_ctrl.lattice)
+        self.press = press
 
     def run(self):
         for istep in range(self.macro_step):
@@ -30,11 +32,15 @@ class QEMD:
         return
 
     def main_step(self, istep):
-        current_lattice = self.default_lattice + self.dL * istep
-        self.qe_ctrl.lattice = current_lattice
-        self.qe_ctrl.kpoints = self.nkpoints
-        self.qe_ctrl.calculation = "md"
-        self.qe_ctrl.nosym = True
+        if self.press is None:
+            current_lattice = self.default_lattice + self.dL * istep
+            self.qe_ctrl.lattice = current_lattice
+            self.qe_ctrl.kpoints = self.nkpoints
+            self.qe_ctrl.calculation = "md"
+        else:
+            self.qe_ctrl.nosym = True
+            self.qe_ctrl.calculation = "vc-md"
+            self.qe_ctrl.press = self.press
         self.qe_ctrl.dt = self.dt
         self.qe_ctrl.nstep = self.micro_step
         self.qe_ctrl.prefix = f"{self.prefix}_try_{istep}"

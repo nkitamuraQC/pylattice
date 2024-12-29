@@ -6,6 +6,33 @@ import pathlib
 
 
 def get_section(myclass, occ):
+    if myclass.calculation == "vc-md":
+        section = {
+            "&control": [
+                "prefix",
+                "calculation",
+                "outdir",
+                "pseudo_dir",
+                "tstress",
+                "tprnfor",
+                "wf_collect",
+                "dt",
+                "nstep",
+            ],
+            "&system": [
+                "ibrav",
+                "nat",
+                "ntyp",
+                "nosym",
+                "ecutwfc",
+                "ecutrho",
+                "occupations",
+            ],
+            "&electrons": ["conv_thr"],
+            "&ions": ["ion_temperature", "tempw"],
+            "&cell": ["press"],
+        }
+
     if myclass.calculation == "md":
         section = {
             "&control": [
@@ -98,10 +125,11 @@ class QEController:
         self.ibrav = 0
         self.ecutwfc = 30.0
         self.ecutrho = 150.0
-        self.etot_conv_thr = "1.0d-2"
+        self.etot_conv_thr = "1.0d-3"
         self.occupations = "tetrahedra"
         self.mixing_beta = 0.7
         self.conv_thr = "1.0d-8"
+        self.press = "0.d0"
         self.tstress = True
         self.tprnfor = True
         self.wf_collect = True
