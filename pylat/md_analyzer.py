@@ -46,6 +46,15 @@ class MD_Analyzer:
         return
     
 
+    def plot_stress(self, index=None):
+        return
+    
+
+    def plot_forces(self, atom_index=0):
+        return
+
+    
+
     def __len__(self):
         return len(self.__dict__)
 
