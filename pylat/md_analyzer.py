@@ -95,6 +95,7 @@ class MD_Analyzer:
                 tmp.append(data)
                 self.coords.append(np.array(tmp))
         print(len(self.coords))   
+        return
     
 
     def get_volumes(self):
