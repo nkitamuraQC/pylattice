@@ -1,5 +1,44 @@
+import copy, os
+import numpy as np
 
 
 class QEMD:
-    def __init__(self, qe_ctrl, dL, macro_step=10):
-        pass
+    def __init__(
+        self,
+        qe_ctrl,
+        dt=20,
+        micro_step=50,
+        prefix="calculation",
+        dL=np.zeros((3, 3)),
+        temp=300,
+        macro_step=10,
+        nkpoints = [4, 4, 4], 
+    ):
+        self.qe_ctrl = qe_ctrl
+        self.dL = dL
+        self.prefix = prefix
+        self.macro_step = macro_step
+        self.micro_step = micro_step
+        self.qe_ctrl.tempw = temp
+        self.dt = dt
+        self.nkpoints = nkpoints
+        self.default_lattice = copy.copy(self.qe_ctrl.lattice)
+
+    def run(self):
+        for istep in range(self.macro_step):
+            self.main_step(istep)
+        return
+
+    def main_step(self, istep):
+        current_lattice = self.default_lattice + self.dL * istep
+        self.qe_ctrl.lattice = current_lattice
+        self.qe_ctrl.kpoints = self.nkpoints
+        self.qe_ctrl.calculation = "md"
+        self.qe_ctrl.nosym = True
+        self.qe_ctrl.dt = self.dt
+        self.qe_ctrl.nstep = self.micro_step
+        self.qe_ctrl.prefix = f"{self.prefix}_try_{istep}"
+        self.qe_ctrl.outdir = f"./work/try_{istep}"
+        os.system(f"mkdir -p {self.qe_ctrl.outdir}")
+        self.qe_ctrl.exec()
+        return

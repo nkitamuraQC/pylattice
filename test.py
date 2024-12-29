@@ -3,6 +3,7 @@ from pylat.crystal_lattice import SpaceGroupSupplement
 from pylat.lattice_model import LatticeModel_gen
 from pylat.qe_controller import QEController
 from pylat.respack import RESPACKController
+from pylat.qe_md import QEMD
 
 
 def test_crystal_lattice():
@@ -60,6 +61,32 @@ def test_qe():
     return
 
 
+def test_qe_only():
+    cifname = "cif/FeSe_mp-20120_primitive.cif"
+    pseudo_dict = {
+        "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
+        "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
+    }
+    qe = QEController(cifname, pseudo_dict)
+    inp = qe.make_input()
+    qe.write_input(inp)
+    qe.exec()
+    return
+
+
+def test_qemd():
+    cifname = "cif/FeSe_mp-20120_primitive.cif"
+    pseudo_dict = {
+        "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
+        "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
+    }
+    qe = QEController(cifname, pseudo_dict, supercell=None)
+    qemd = QEMD(qe, macro_step=1, temp=10)
+    qemd.run()
+
+    return
+
+
 def test_wan90():
     cifname = "./cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
@@ -79,4 +106,5 @@ def test_wan90():
 
 
 if __name__ == "__main__":
-    test_wan90()
+    test_qemd()
+    # test_qe_only()

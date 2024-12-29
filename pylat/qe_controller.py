@@ -5,8 +5,8 @@ import numpy as np
 import pathlib
 
 
-def get_section(occ):
-    if "tetrahedra" in occ:
+def get_section(myclass, occ):
+    if myclass.calculation == "md":
         section = {
             "&control": [
                 "prefix",
@@ -16,52 +16,80 @@ def get_section(occ):
                 "tstress",
                 "tprnfor",
                 "wf_collect",
+                "dt",
+                "nstep",
             ],
             "&system": [
                 "ibrav",
                 "nat",
                 "ntyp",
+                "nosym",
                 "ecutwfc",
                 "ecutrho",
                 "occupations",
-                "nosym",
-                "noinv",
             ],
-            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+            "&electrons": ["conv_thr"],
+            "&ions": ["ion_temperature", "tempw"],
+            "&cell": [],
         }
 
-    elif occ == "smearing":
-        section = {
-            "&control": [
-                "prefix",
-                "calculation",
-                "outdir",
-                "pseudo_dir",
-                "tstress",
-                "tprnfor",
-                "wf_collect",
-            ],
-            "&system": [
-                "ibrav",
-                "nat",
-                "ntyp",
-                "ecutwfc",
-                "ecutrho",
-                "occupations",
-                "nosym",
-                "noinv",
-                "smearing",
-                "degauss",
-            ],
-            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
-        }
+    else:
+        if "tetrahedra" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "nosym",
+                    "noinv",
+                ],
+                "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+            }
+
+        elif occ == "smearing":
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "nosym",
+                    "noinv",
+                    "smearing",
+                    "degauss",
+                ],
+                "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+            }
     return section
 
 
 class QEController:
-    def __init__(self, cif, pseudo_dict):
-        self.filename = "calculation.in"
-        self.log = "calculation.out"
+    def __init__(self, cif, pseudo_dict, supercell=None):
+        self.filename = None
+        self.log = None
         self.prefix = "calculation"
         self.calculation = "scf"
         self.outdir = "./work"
@@ -70,6 +98,7 @@ class QEController:
         self.ibrav = 0
         self.ecutwfc = 30.0
         self.ecutrho = 150.0
+        self.etot_conv_thr = "1.0d-2"
         self.occupations = "tetrahedra"
         self.mixing_beta = 0.7
         self.conv_thr = "1.0d-8"
@@ -84,6 +113,11 @@ class QEController:
         self.degauss = 0.07
         self.offset = [0, 0, 0]
         self.electron_maxstep = 200
+        self.dt = 20
+        self.nstep = 50
+        self.conv_thr = "1.0d-3"
+        self.ion_temperature = "initial"
+        self.tempw = 300.0
 
         self.pseudo_dict = pseudo_dict
         self.nbnd = None
@@ -92,7 +126,7 @@ class QEController:
         self.atoms = None  # [["H",mass,psudo]]
         self.lattice = None  # [[x,y,z],[x,y,z],[x,y,z]]
 
-        self.read_file(cif)
+        self.read_file(cif, supercell=supercell)
 
         self.nat = len(self.geoms)
         self.ntyp = len(self.atoms)
@@ -116,8 +150,15 @@ class QEController:
         weight = dx * dy * dz
         return kxs, kys, kzs, weight
 
-    def read_file(self, ciffile):
+    def read_file(self, ciffile, supercell=None):
         structure = Structure.from_file(ciffile)
+        if supercell is not None:
+            scaling_matrix = np.diag(np.array(supercell))
+            supercell_struct = (
+                structure.copy()
+            )  # To keep the original structure unchanged
+            supercell_struct.make_supercell(scaling_matrix)
+            structure = supercell_struct
         lattice = structure.lattice
         a, b, c = lattice.a, lattice.b, lattice.c  # 長さ
         alpha, beta, gamma = lattice.alpha, lattice.beta, lattice.gamma  # 角度
@@ -138,7 +179,7 @@ class QEController:
 
         self.geoms = []
         for i in range(len(self.xyz)):
-            self.geoms.append([self.elements[i], self.xyz[i]])
+            self.geoms.append([self.elements[i], self.xyz_cart[i]])
 
         elems = list(set(self.elements))
         self.atoms = []
@@ -155,7 +196,7 @@ class QEController:
         return
 
     def make_input(self, txt=""):
-        self.section = get_section(self.occupations)
+        self.section = get_section(self, self.occupations)
         for k in self.section:
             print(k)
             txt += k + "\n"
@@ -180,7 +221,7 @@ class QEController:
         txt += "ATOMIC_SPECIES\n"
         for at in self.atoms:
             txt += f"{at[0]}  {at[1]}  {at[2]} \n"
-        txt += "ATOMIC_POSITIONS\n"
+        txt += "ATOMIC_POSITIONS angstrom \n"
         for at in self.geoms:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "CELL_PARAMETERS angstrom \n"
@@ -191,7 +232,7 @@ class QEController:
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
         else:
-            txt += "K_POINTS crystal \n"
+            txt += "K_POINTS \n"
             nk = self.kpoints[0] * self.kpoints[1] * self.kpoints[2]
             txt += f"{nk} \n"
             kxs, kys, kzs, w = self.get_kpoint()
@@ -203,7 +244,9 @@ class QEController:
         return txt
 
     def write_input(self, inp):
-        wf = open(self.filename, "w")
+        self.filename = self.prefix+".in"
+        self.log = self.prefix+".out"
+        wf = open(self.prefix+".in", "w")
         wf.write(inp)
         wf.close()
         return
