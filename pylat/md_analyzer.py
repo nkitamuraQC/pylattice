@@ -1,14 +1,15 @@
 import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
+import pandas as pd
 
 class MD_Analyzer:
     def __init__(self, prefix, natoms=2):
         self.prefix = prefix
         self.input_name = self.prefix + ".in"
         self.log_name = self.prefix + ".out"
-        self.energies = None
         self.natoms = natoms
+        self.energies = None
         self.stresses_au = None
         self.stresses_kbar = None
         self.kinetics = None
@@ -108,6 +109,20 @@ class MD_Analyzer:
         self.get_kinetic_energies()
         self.get_forces()
         self.get_temperatures()
+        return
+    
+
+    def to_csv(self, csv_name="save.csv"):
+        df = pd.DataFrame({
+            "energies": self.energies,
+            "temperatures": self.temps,
+            "kinetics": self.kinetics,
+            "stresses_au": self.stresses_au
+            "stresses_kbar": self.stresses_kbar
+            "forces": self.forces
+        })
+
+        df.to_csv(csv_name)
         return
     
 
