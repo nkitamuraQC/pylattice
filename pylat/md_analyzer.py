@@ -1,3 +1,5 @@
+import matplotlib
+from matplotlib import pyplot as plt
 
 class MD_Analyzer:
     def __init__(self, prefix):
