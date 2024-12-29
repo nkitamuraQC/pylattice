@@ -3,11 +3,12 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 class MD_Analyzer:
-    def __init__(self, prefix):
+    def __init__(self, prefix, natoms=2):
         self.prefix = prefix
         self.input_name = self.prefix + ".in"
         self.log_name = self.prefix + ".out"
         self.energies = None
+        self.natoms = natoms
         self.stresses_au = None
         self.stresses_kbar = None
         self.kinetics = None
@@ -81,6 +82,19 @@ class MD_Analyzer:
                         break
         print(len(self.forces))     
         return
+    
+
+    def get_coords(self):
+        self.coords = []
+        self.elems = []
+        for i, line in enumerate(self.lines):
+            if "ATOMIC_POSITIONS (angstrom)" in line:
+                tmp = []
+                for j in range(self.natoms):
+                    data = list(map(float, self.lines[i+j+1].split()[1:]))
+                tmp.append(data)
+                self.coords.append(np.array(tmp))
+        print(len(self.coords))   
     
 
     def get_volumes(self):
