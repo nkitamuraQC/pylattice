@@ -9,6 +9,7 @@ class MD_Analyzer:
         self.kinetic = None
         self.temp = None
         self.force = None
+        self.volume = None
 
 
     def get_energies(self):
@@ -31,7 +32,11 @@ class MD_Analyzer:
         return
     
 
-    def get_young(self):
+    def get_volumes(self):
+        return
+    
+
+    def analyse(self):
         return
     
 
