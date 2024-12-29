@@ -42,6 +42,16 @@ class MD_Properties:
 
         return
     
+if __name__ == "__main__":
+    from pylat.md_analyzer import MD_Analyzer
+    ndata = 10
+    mdas = [MD_Analyzer("calculation_try_{i}".format(i=i)) for i in range(ndata)]
+    mdp = MD_Properties(mdas)
+    dlat = np.array([[0.01, 0, 0], [0, 0, 0], [0, 0, 0]])
+    targets_list = [i for i in range(ndata)]
+    mdp.get_young(dlat, targets_list=targets_list, index=np.array([0, 0]))
+    mdp.plot()
+    
 
 
     

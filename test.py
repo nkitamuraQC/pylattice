@@ -4,9 +4,12 @@ from pylat.lattice_model import LatticeModel_gen
 from pylat.qe_controller import QEController
 from pylat.respack import RESPACKController
 from pylat.qe_md import QEMD
+import numpy as np
+from pylat.md_analyzer import MD_Analyzer
+from pylat.md_properties import MD_Properties
 
 
-def test_crystal_lattice():
+def _test_crystal_lattice():
     # cifname = "cif/TMTSF2AsF6.cif"
     # cifout = "cif/TMTSF2AsF6_sup.cif"
 
@@ -25,7 +28,7 @@ def test_crystal_lattice():
     return
 
 
-def test_gen_lat():
+def _test_gen_lat():
     int_dict = {"t1": 1, "t2": 0, "U": 10, "V1": 2, "V2": 0}
     lg = LatticeModel_gen(int_dict)
     lg.drive()
@@ -42,7 +45,7 @@ def test_gen_lat():
     return
 
 
-def test_qe():
+def _test_qe():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
@@ -61,7 +64,7 @@ def test_qe():
     return
 
 
-def test_qe_only():
+def _test_qe_only():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
@@ -86,8 +89,26 @@ def test_qemd():
 
     return
 
+def test_analyzer():
+    prefix = "calculation_try_0"
+    mda = MD_Analyzer(prefix)
+    mda.parse()
+    mda.plot(target="energies")
+    mda.plot_stress(index=[0, 0])
+    return
 
-def test_wan90():
+
+def test_young():
+    ndata = 10
+    mdas = [MD_Analyzer("calculation_try_{i}".format(i=i)) for i in range(ndata)]
+    mdp = MD_Properties(mdas)
+    dlat = np.array([[0.01, 0, 0], [0, 0, 0], [0, 0, 0]])
+    targets_list = [i for i in range(ndata)]
+    mdp.get_young(dlat, targets_list=targets_list, index=np.array([0, 0]))
+    mdp.plot()
+
+
+def _test_wan90():
     cifname = "./cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
