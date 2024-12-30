@@ -1,0 +1,41 @@
+&control
+prefix = 'calculation_try_0', 
+calculation = 'md', 
+outdir = './work/try_0', 
+pseudo_dir = './pseudo', 
+tstress = .true., 
+tprnfor = .true., 
+wf_collect = .true., 
+dt = 20, 
+nstep = 30, 
+/
+&system
+ibrav = 0, 
+nat = 2, 
+ntyp = 2, 
+nosym = .true., 
+ecutwfc = 60.0, 
+ecutrho = 240.0, 
+occupations = 'tetrahedra', 
+/
+&electrons
+conv_thr = 1d-5, 
+/
+&ions
+ion_temperature = 'initial', 
+tempw = 10, 
+/
+&cell
+/
+ATOMIC_SPECIES
+Se  78.96  Se.pbe-dn-kjpaw_psl.1.0.0.UPF 
+Fe  55.845  Fe.pbe-spn-kjpaw_psl.1.0.0.UPF 
+ATOMIC_POSITIONS angstrom 
+Fe  0.0000000000  0.0000000000  0.0000000000 
+Se  1.5220010000  1.5220010000  1.5220010000 
+CELL_PARAMETERS angstrom 
+3.0440020000   0.0000000000   0.0000000000 
+-0.0000000000   3.0440020000   0.0000000000 
+0.0000000000   0.0000000000   3.0440020000 
+K_POINTS {automatic}
+8 8 8 0 0 0

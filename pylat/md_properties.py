@@ -17,7 +17,7 @@ class MD_Properties:
         return
     
     def plot(self):
-        steps = [i for i in self.target_data]
+        steps = [i for i in range(len(self.target_data))]
         plt.scatter(steps, self.target_data)
         plt.savefig("plot.png")
         return
