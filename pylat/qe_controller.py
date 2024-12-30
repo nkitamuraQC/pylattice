@@ -294,10 +294,11 @@ class QEController:
         # dos = open(str(self.input_folder.joinpath("dos.in")), "w")
         # dos_out = str(self.input_folder.joinpath("dos.out"))
         dos = open("dos.in", "w")
+        dos_in = "dos.in"
         dos_out = "dos.out"
         dos.write(txt)
         dos.close()
-        os.system(f"dos.x < {dos} > {dos_out}")
+        os.system(f"dos.x < {dos_in} > {dos_out}")
         return
 
     def exec_pdos(self):
@@ -309,10 +310,11 @@ class QEController:
         # dos = open(str(self.input_folder.joinpath("pdos.in")), "w")
         # dos_out = str(self.input_folder.joinpath("pdos.out"))
         dos = open("pdos.in", "w")
+        dos_in = "pdos.in"
         dos_out = "pdos.out"
         dos.write(txt)
         dos.close()
-        os.system(f"projwfc.x < {dos} > {dos_out}")
+        os.system(f"projwfc.x < {dos_in} > {dos_out}")
         return
 
     def __len__(self):

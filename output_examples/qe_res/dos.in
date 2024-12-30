@@ -1,6 +1,0 @@
-&dos
-    outdir = './work',
-    prefix= 'calculation',
-    fildos= 'calculation.dos',
-/
-        

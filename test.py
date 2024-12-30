@@ -45,7 +45,7 @@ def _test_gen_lat():
     return
 
 
-def _test_qe():
+def test_qe():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
@@ -54,7 +54,7 @@ def _test_qe():
     qe = QEController(cifname, pseudo_dict)
     inp = qe.make_input()
     qe.write_input(inp)
-    ## qe.exec()
+    qe.exec()
     qe.exec_dos()
     qe.exec_pdos()
 
@@ -64,7 +64,7 @@ def _test_qe():
     return
 
 
-def _test_qe_only():
+def test_qe_only():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
@@ -135,6 +135,6 @@ def _test_wan90():
 
 if __name__ == "__main__":
     # test_qemd()
-    # test_qe_only()
+    test_qe()
     #test_analyzer()
-    test_young()
+    #test_young()
