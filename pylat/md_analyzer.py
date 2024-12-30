@@ -27,7 +27,7 @@ class MD_Analyzer:
         for i, line in enumerate(self.lines):
             if "!    total energy" in line:
                 target_line = line
-                self.energies.append(float(target_line.split("=")[1].split("Ry")))
+                self.energies.append(float(target_line.split("=")[1].split("Ry")[0]))
         print(len(self.energies))
         return
     
@@ -53,7 +53,7 @@ class MD_Analyzer:
         for i, line in enumerate(self.lines):
             if "kinetic energy (Ekin)" in line:
                 target_line = line
-                self.kinetics.append(float(target_line.split("=")[1].split("Ry")))
+                self.kinetics.append(float(target_line.split("=")[1].split("Ry")[0]))
         print(len(self.kinetics))     
         return
     
@@ -61,9 +61,9 @@ class MD_Analyzer:
     def get_temperatures(self):
         self.temps = []
         for i, line in enumerate(self.lines):
-            if "temperature " in line:
+            if "temperature           =" in line:
                 target_line = line
-                self.temps.append(float(target_line.split("=")[1].split("K")))
+                self.temps.append(float(target_line.split("=")[1].split("K")[0]))
         print(len(self.temps))     
         return
     
@@ -81,6 +81,7 @@ class MD_Analyzer:
                     else:
                         self.forces.append(np.array(tmp))
                         break
+                    count += 1
         print(len(self.forces))     
         return
     
@@ -107,8 +108,8 @@ class MD_Analyzer:
         self.get_energies()
         self.get_stress_tensors()
         self.get_kinetic_energies()
-        self.get_forces()
         self.get_temperatures()
+        self.get_forces()
         return
     
 
@@ -117,8 +118,8 @@ class MD_Analyzer:
             "energies": self.energies,
             "temperatures": self.temps,
             "kinetics": self.kinetics,
-            "stresses_au": self.stresses_au
-            "stresses_kbar": self.stresses_kbar
+            "stresses_au": self.stresses_au,
+            "stresses_kbar": self.stresses_kbar,
             "forces": self.forces
         })
 
@@ -132,14 +133,14 @@ class MD_Analyzer:
         elif "forces" in target:
             raise NotImplementedError
         else:
-            steps = [i for i in range(self.energies)]
+            steps = [i for i, _ in enumerate(self.energies)]
             plt.scatter(steps, self[target])
             plt.savefig(target+".png")
         return
     
 
     def plot_stress(self, index=None, typ="au"):
-        if index is list:
+        if isinstance(index, list):
             a, b = index
             plot_data = []
             if typ == "au":
@@ -148,7 +149,7 @@ class MD_Analyzer:
             if typ == "kbar":
                 for i, val in enumerate(self.stresses_kbar):
                     plot_data.append(val[a, b])
-            steps = [i for i in range(self.energies)]
+            steps = [i for i, _ in enumerate(self.energies)]
             plt.scatter(steps, plot_data)
             plt.savefig(f"stress_{a}_{b}"+".png")
         else:

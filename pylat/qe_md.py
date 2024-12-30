@@ -27,7 +27,12 @@ class QEMD:
         self.press = press
 
     def run(self):
-        for istep in range(self.macro_step):
+        start = 0
+        for istep_ in range(self.macro_step):
+            if not os.path.exists(f"./{self.prefix}_try_{istep}.out"):
+                break
+        start = istep_
+        for istep in range(start, self.macro_step):
             self.main_step(istep)
         return
 
@@ -42,6 +47,7 @@ class QEMD:
             self.qe_ctrl.calculation = "vc-md"
             self.qe_ctrl.press = self.press
         self.qe_ctrl.dt = self.dt
+        self.qe_ctrl.nosym = True
         self.qe_ctrl.nstep = self.micro_step
         self.qe_ctrl.prefix = f"{self.prefix}_try_{istep}"
         self.qe_ctrl.outdir = f"./work/try_{istep}"

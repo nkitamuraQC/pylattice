@@ -1,25 +1,25 @@
 &control
-prefix = 'calculation_try_0', 
+prefix = 'calculation_try_6', 
 calculation = 'md', 
-outdir = './work/try_0', 
+outdir = './work/try_6', 
 pseudo_dir = './pseudo', 
 tstress = .true., 
 tprnfor = .true., 
 wf_collect = .true., 
 dt = 20, 
-nstep = 50, 
+nstep = 30, 
 /
 &system
 ibrav = 0, 
 nat = 2, 
 ntyp = 2, 
-nosym = .false., 
-ecutwfc = 80.0, 
-ecutrho = 320.0, 
+nosym = .true., 
+ecutwfc = 60.0, 
+ecutrho = 240.0, 
 occupations = 'tetrahedra', 
 /
 &electrons
-conv_thr = 1d-6, 
+conv_thr = 1d-5, 
 /
 &ions
 ion_temperature = 'initial', 
@@ -34,7 +34,7 @@ ATOMIC_POSITIONS angstrom
 Fe  0.0000000000  0.0000000000  0.0000000000 
 Se  1.5220010000  1.5220010000  1.5220010000 
 CELL_PARAMETERS angstrom 
-3.0440020000   0.0000000000   0.0000000000 
+3.3440020000   0.0000000000   0.0000000000 
 -0.0000000000   3.0440020000   0.0000000000 
 0.0000000000   0.0000000000   3.0440020000 
 K_POINTS {automatic}

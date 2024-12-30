@@ -9,24 +9,22 @@ class MD_Properties:
         self.target_data = []
     
     
-    def gather_data(self, target="stresses_au", index=None):
-        if index is not np.array:
-            raise NotImplementedError
+    def gather_data(self, target="stresses_au", index_x=None, index_y=None):
         for md_analyser in self.md_analyzers:
-            val = md_analyser[target][-1][index]
+            val = md_analyser[target][-1][index_x, index_y]
             self.target_data.append(val)
         self.target_data = np.array(self.target_data)
         return
     
     def plot(self):
-        steps = [i for i in range(self.target_data)]
-        plt.plot(steps, self.target_data)
+        steps = [i for i in self.target_data]
+        plt.scatter(steps, self.target_data)
         plt.savefig("plot.png")
         return
 
 
-    def get_young(self, dlat, targets_list=None, target="stresses_au", index=None):
-        self.gather_data(target=target, index=index)
+    def get_young(self, dlat, targets_list=None, target="stresses_au", index_x=0, index_y=0):
+        self.gather_data(target=target, index_x=index_x, index_y=index_y)
         if len(self.target_data) == 0:
             raise ValueError
         elif targets_list is list:
@@ -38,6 +36,7 @@ class MD_Properties:
             print('coefficient = ', lr.coef_[0]) # 説明変数の係数を出力
             print('intercept = ', lr.intercept_) 
             young = lr.coef_[0]
+            print("young: ", young)
             return young
 
         return
