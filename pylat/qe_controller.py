@@ -114,7 +114,7 @@ def get_section(myclass, occ):
 
 
 class QEController:
-    def __init__(self, cif, pseudo_dict, supercell=None):
+    def __init__(self, cif, pseudo_dict, supercell=None, coord_type="crystal"):
         self.filename = None
         self.log = None
         self.prefix = "calculation"
@@ -145,6 +145,7 @@ class QEController:
         self.conv_thr = "1.0d-5"
         self.ion_temperature = "initial"
         self.tempw = 300.0
+        self.coord_type = coord_type
 
         self.pseudo_dict = pseudo_dict
         self.nbnd = None
@@ -203,10 +204,16 @@ class QEController:
         self.lattice_param = [a, b, c, alpha, beta, gamma]
         self.lattice = lattice.matrix
         self.xyz_cart = lattice.get_cartesian_coords(atomic_coordinates)
-
+        
+        if self.coord_type == "crystal":
+            self.coord = self.xyz
+        elif self.coord_type == "angstrom":
+            self.coord = self.xyz_cart
+        else:
+            raise NotImplementedError
         self.geoms = []
         for i in range(len(self.xyz)):
-            self.geoms.append([self.elements[i], self.xyz_cart[i]])
+            self.geoms.append([self.elements[i], self.coord[i]])
 
         elems = list(set(self.elements))
         self.atoms = []
@@ -248,7 +255,7 @@ class QEController:
         txt += "ATOMIC_SPECIES\n"
         for at in self.atoms:
             txt += f"{at[0]}  {at[1]}  {at[2]} \n"
-        txt += "ATOMIC_POSITIONS angstrom \n"
+        txt += f"ATOMIC_POSITIONS {self.coord_type} \n"
         for at in self.geoms:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "CELL_PARAMETERS angstrom \n"

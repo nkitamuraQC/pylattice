@@ -29,7 +29,7 @@ class QEMD:
     def run(self):
         start = 0
         for istep_ in range(self.macro_step):
-            if not os.path.exists(f"./{self.prefix}_try_{istep}.out"):
+            if not os.path.exists(f"./{self.prefix}_try_{istep_}.out"):
                 break
         start = istep_
         for istep in range(start, self.macro_step):

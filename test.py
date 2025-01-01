@@ -134,7 +134,7 @@ def _test_wan90():
 
 
 if __name__ == "__main__":
-    # test_qemd()
-    test_qe()
+    test_qemd()
+    # test_qe()
     #test_analyzer()
     #test_young()
