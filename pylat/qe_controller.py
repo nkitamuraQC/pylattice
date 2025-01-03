@@ -291,6 +291,13 @@ class QEController:
         os.system("pw.x < {} > {}".format(self.filename, self.log))
         return
 
+    def para_exec(self, n_para=4):
+        txt = self.make_input()
+        self.write_input(txt)
+        # mpirun -np 8 pw.x -in input.in > output.out
+        os.system("mpirun -np {} pw.x < {} > {}".format(n_para, self.filename, self.log))
+        return
+
     def exec_dos(self):
         txt = f"""&dos
     outdir = '{str(self.outdir)}',
