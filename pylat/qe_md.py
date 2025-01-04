@@ -14,6 +14,7 @@ class QEMD:
         macro_step=10,
         nkpoints = [4, 4, 4],
         press = None, 
+        degauss = None,
     ):
         self.qe_ctrl = qe_ctrl
         self.dL = dL
@@ -25,6 +26,7 @@ class QEMD:
         self.nkpoints = nkpoints
         self.default_lattice = copy.copy(self.qe_ctrl.lattice)
         self.press = press
+        self.degauss = degauss
 
     def run(self):
         start = 0
@@ -51,6 +53,9 @@ class QEMD:
         self.qe_ctrl.nstep = self.micro_step
         self.qe_ctrl.prefix = f"{self.prefix}_try_{istep}"
         self.qe_ctrl.outdir = f"./work/try_{istep}"
+        if isinstsnce(self.degauss, float):
+            self.qe_ctrl.occupation = "smearing"
+            self.qe_ctrl.degauss = self.degauss
         os.system(f"mkdir -p {self.qe_ctrl.outdir}")
         self.qe_ctrl.exec()
         return
