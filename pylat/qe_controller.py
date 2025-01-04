@@ -125,7 +125,7 @@ class QEController:
         self.ibrav = 0
         self.ecutwfc = 60.0
         self.ecutrho = 240.0
-        self.etot_conv_thr = "1.0d-3"
+        self.etot_conv_thr = "1.0d-8"
         self.occupations = "tetrahedra"
         self.mixing_beta = 0.7
         self.press = "0.d0"
@@ -142,7 +142,7 @@ class QEController:
         self.electron_maxstep = 200
         self.dt = 20
         self.nstep = 50
-        self.conv_thr = "1.0d-5"
+        self.conv_thr = "1.0d-8"
         self.ion_temperature = "initial"
         self.tempw = 300.0
         self.coord_type = coord_type
