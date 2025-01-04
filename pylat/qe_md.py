@@ -28,17 +28,17 @@ class QEMD:
         self.press = press
         self.degauss = degauss
 
-    def run(self):
+    def run(self, n_para=None):
         start = 0
         for istep_ in range(self.macro_step):
             if not os.path.exists(f"./{self.prefix}_try_{istep_}.out"):
                 break
         start = istep_
         for istep in range(start, self.macro_step):
-            self.main_step(istep)
+            self.main_step(istep, n_para)
         return
 
-    def main_step(self, istep):
+    def main_step(self, istep, n_para):
         if self.press is None:
             current_lattice = self.default_lattice + self.dL * istep
             self.qe_ctrl.lattice = current_lattice
@@ -57,5 +57,8 @@ class QEMD:
             self.qe_ctrl.occupation = "smearing"
             self.qe_ctrl.degauss = self.degauss
         os.system(f"mkdir -p {self.qe_ctrl.outdir}")
-        self.qe_ctrl.exec()
+        if n_para is None:
+            self.qe_ctrl.exec()
+        else:
+            self.qe_ctrl.para_exec(n_para=n_para)
         return
