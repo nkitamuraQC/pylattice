@@ -7,58 +7,116 @@ import pathlib
 
 def get_section(myclass, occ):
     if myclass.calculation == "vc-md":
-        section = {
-            "&control": [
-                "prefix",
-                "calculation",
-                "outdir",
-                "pseudo_dir",
-                "tstress",
-                "tprnfor",
-                "wf_collect",
-                "dt",
-                "nstep",
-            ],
-            "&system": [
-                "ibrav",
-                "nat",
-                "ntyp",
-                "nosym",
-                "ecutwfc",
-                "ecutrho",
-                "occupations",
-            ],
-            "&electrons": ["conv_thr"],
-            "&ions": ["ion_temperature", "tempw"],
-            "&cell": ["press"],
-        }
+        if "tetrahedra" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
+
+        if "smearing" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "degauss",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
 
     elif myclass.calculation == "md":
-        section = {
-            "&control": [
-                "prefix",
-                "calculation",
-                "outdir",
-                "pseudo_dir",
-                "tstress",
-                "tprnfor",
-                "wf_collect",
-                "dt",
-                "nstep",
-            ],
-            "&system": [
-                "ibrav",
-                "nat",
-                "ntyp",
-                "nosym",
-                "ecutwfc",
-                "ecutrho",
-                "occupations",
-            ],
-            "&electrons": ["conv_thr"],
-            "&ions": ["ion_temperature", "tempw"],
-            "&cell": [],
-        }
+        if "tetrahedra" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": [],
+            }
+
+        elif "smearing" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "degauss",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": [],
+            }
 
     else:
         if "tetrahedra" in occ:
@@ -107,7 +165,6 @@ def get_section(myclass, occ):
                     "occupations",
                     "nosym",
                     "noinv",
-                    "smearing",
                     "degauss",
                 ],
                 "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],

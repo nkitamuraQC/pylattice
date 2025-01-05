@@ -53,8 +53,8 @@ class QEMD:
         self.qe_ctrl.nstep = self.micro_step
         self.qe_ctrl.prefix = f"{self.prefix}_try_{istep}"
         self.qe_ctrl.outdir = f"./work/try_{istep}"
-        if isinstsnce(self.degauss, float):
-            self.qe_ctrl.occupation = "smearing"
+        if isinstance(self.degauss, float):
+            self.qe_ctrl.occupations = "smearing"
             self.qe_ctrl.degauss = self.degauss
         os.system(f"mkdir -p {self.qe_ctrl.outdir}")
         if n_para is None:
