@@ -71,6 +71,7 @@ def get_section(myclass, occ):
                     "tstress",
                     "tprnfor",
                     "wf_collect",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -95,6 +96,7 @@ def get_section(myclass, occ):
                     "tstress",
                     "tprnfor",
                     "wf_collect",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -120,6 +122,7 @@ class QEController:
         self.prefix = "calculation"
         self.calculation = "scf"
         self.outdir = "./work"
+        self.restart_mode = "from_scratch"
         self.pseudo_dir = "./pseudo"
         self.charge = 0
         self.ibrav = 0
@@ -213,12 +216,16 @@ class QEController:
             raise NotImplementedError
         self.geoms = []
         for i in range(len(self.xyz)):
+            if ":" in self.elements[i]:
+                self.elements[i] = self.elements[i].split(":")[0]
             self.geoms.append([self.elements[i], self.coord[i]])
 
         elems = list(set(self.elements))
         self.atoms = []
         save = []
         for elem in elems:
+            if ":" in elem:
+                elem = elem.split(":")[0]
             if elem in save:
                 continue
             element = periodictable.elements.symbol(elem)
@@ -228,6 +235,7 @@ class QEController:
             save.append(elem)
 
         return
+    
 
     def make_input(self, txt=""):
         self.section = get_section(self, self.occupations)
