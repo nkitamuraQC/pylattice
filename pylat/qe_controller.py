@@ -3,7 +3,7 @@ from pymatgen.core import Structure
 import periodictable
 import numpy as np
 import pathlib
-
+from pylat.get_section_cryspy import get_section_for_cryspy
 
 def get_section(myclass, occ):
     if myclass.calculation == "vc-md":
@@ -121,6 +121,121 @@ def get_section(myclass, occ):
                 "&ions": ["ion_temperature", "tempw"],
                 "&cell": [],
             }
+    elif myclass.calculation == "vc-relax":
+        if "tetrahedra" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                    "restart_mode",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
+
+        if "smearing" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                    "restart_mode",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "degauss",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
+
+    if myclass.calculation == "relax":
+        if "tetrahedra" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                    "restart_mode",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
+
+        if "smearing" in occ:
+            section = {
+                "&control": [
+                    "prefix",
+                    "calculation",
+                    "outdir",
+                    "pseudo_dir",
+                    "tstress",
+                    "tprnfor",
+                    "wf_collect",
+                    "dt",
+                    "nstep",
+                    "restart_mode",
+                ],
+                "&system": [
+                    "ibrav",
+                    "nat",
+                    "ntyp",
+                    "nosym",
+                    "ecutwfc",
+                    "ecutrho",
+                    "occupations",
+                    "degauss",
+                ],
+                "&electrons": ["conv_thr"],
+                "&ions": ["ion_temperature", "tempw"],
+                "&cell": ["press"],
+            }
 
     else:
         if "tetrahedra" in occ:
@@ -210,6 +325,7 @@ class QEController:
         self.ion_temperature = "initial"
         self.tempw = 300.0
         self.coord_type = coord_type
+        self.do_cryspy = False
 
         self.pseudo_dict = pseudo_dict
         self.nbnd = None
@@ -299,7 +415,10 @@ class QEController:
     
 
     def make_input(self, txt=""):
-        self.section = get_section(self, self.occupations)
+        if self.do_cryspy:
+            self.section = get_section_for_cryspy(self, self.occupations)
+        else:
+            self.section = get_section(self, self.occupations)
         for k in self.section:
             print(k)
             txt += k + "\n"
