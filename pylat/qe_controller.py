@@ -19,6 +19,7 @@ def get_section(myclass, occ):
                     "wf_collect",
                     "dt",
                     "nstep",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -46,6 +47,7 @@ def get_section(myclass, occ):
                     "wf_collect",
                     "dt",
                     "nstep",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -75,6 +77,7 @@ def get_section(myclass, occ):
                     "wf_collect",
                     "dt",
                     "nstep",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -102,6 +105,7 @@ def get_section(myclass, occ):
                     "wf_collect",
                     "dt",
                     "nstep",
+                    "restart_mode",
                 ],
                 "&system": [
                     "ibrav",
@@ -341,6 +345,35 @@ class QEController:
                         txt += f"{kx} {ky} {kz} {w}\n"
 
         return txt
+    
+    def make_input_for_cryspy(self, txt=""):
+        self.section = get_section(self, self.occupations)
+        for k in self.section:
+            print(k)
+            txt += k + "\n"
+            for a in self.section[k]:
+                if isinstance(self[a], bool) and self[a] == True:
+                    val = ".true."
+                elif isinstance(self[a], bool) and self[a] == False:
+                    val = ".false."
+                else:
+                    val = self[a]
+                if isinstance(val, str):
+                    if a != "conv_thr" and val != ".true." and val != ".false.":
+                        txt += f"{a} = '{val}', \n"
+                    else:
+                        txt += f"{a} = {val}, \n"
+                else:
+                    txt += f"{a} = {val}, \n"
+                if a == "nbnd" and self.calculation == "nscf":
+                    txt += f"{a} = {val}, \n"
+
+            txt += "/" + "\n"
+        txt += "ATOMIC_SPECIES\n"
+        for at in self.atoms:
+            txt += f"{at[0]}  {at[1]}  {at[2]} \n"
+
+        return txt
 
     def write_input(self, inp):
         self.filename = self.prefix+".in"
@@ -349,6 +382,7 @@ class QEController:
         wf.write(inp)
         wf.close()
         return
+
 
     def exec(self):
         txt = self.make_input()
