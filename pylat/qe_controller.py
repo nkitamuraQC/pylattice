@@ -501,6 +501,16 @@ class QEController:
         wf.write(inp)
         wf.close()
         return
+    
+
+    def write_input4cryspy(self, inp, index, dirname="calc_in"):
+        d = pathlib.Path(dirname)
+        self.filename = str(d.joinpath(self.prefix+f".in_{index}"))
+        self.log = self.prefix+".out"
+        wf = open(self.prefix+".in", "w")
+        wf.write(inp)
+        wf.close()
+        return
 
 
     def exec(self):
