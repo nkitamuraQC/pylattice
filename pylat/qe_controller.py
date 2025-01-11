@@ -179,7 +179,7 @@ def get_section(myclass, occ):
                 "&cell": ["press"],
             }
 
-    if myclass.calculation == "relax":
+    elif myclass.calculation == "relax":
         if "tetrahedra" in occ:
             section = {
                 "&control": [
