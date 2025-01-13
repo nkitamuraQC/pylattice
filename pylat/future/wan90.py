@@ -1,5 +1,6 @@
 from pylat.future.wan90_template import *
 import os
+import subprocess
 
 
 class Wannier90:
@@ -74,12 +75,19 @@ class Wannier90:
             gauss_center.append(self.qe_ctrl.geoms[g[0]][1])
         self.gaussian_orb = gauss_orb
         self.gauss_center = gauss_center
-        return
+        return 
 
     def do_wan90(self):
-        os.system(f"wannier90.x -pp {self.prefix}")
+        # 1. wannier90.x -pp コマンドの実行
+        subprocess.run(["wannier90.x", "-pp", self.prefix], check=True)
+
+        # 2. pw2wannier90.x コマンドの実行
         pw2wan_in = f"{self.qe_ctrl.prefix}.pw2wan.in"
         pw2wan_out = f"{self.qe_ctrl.prefix}.pw2wan.out"
-        os.system(f"pw2wannier90.x < {pw2wan_in} > {pw2wan_out}")
-        # os.system(f"wannier90.x {self.prefix}")
-        return
+        with open(pw2wan_in, "r") as infile, open(pw2wan_out, "w") as outfile:
+            subprocess.run(["pw2wannier90.x"], stdin=infile, stdout=outfile, check=True)
+
+        # 3. 実行済みでコメントアウトされた部分の再実装（必要に応じて有効化）
+        # subprocess.run(["wannier90.x", self.prefix], check=True)
+
+    return
