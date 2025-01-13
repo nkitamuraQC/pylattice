@@ -539,14 +539,19 @@ class QEController:
     def exec(self):
         txt = self.make_input()
         self.write_input(txt)
-        os.system("pw.x < {} > {}".format(self.filename, self.log))
+        #os.system("pw.x < {} > {}".format(self.filename, self.log))
+        with open(self.filename, 'r') as input_file, open(self.log, 'w') as output_file:
+            subprocess.run(["pw.x"], stdin=input_file, stdout=output_file, check=True)
         return
 
     def para_exec(self, n_para=4):
         txt = self.make_input()
         self.write_input(txt)
         # mpirun -np 8 pw.x -in input.in > output.out
-        os.system("mpirun -np {} pw.x < {} > {}".format(n_para, self.filename, self.log))
+        # os.system("mpirun -np {} pw.x < {} > {}".format(n_para, self.filename, self.log))
+
+        with open(self.filename, 'r') as input_file, open(self.log, 'w') as output_file:
+            subprocess.run(["mpirun", "-np", str(n_para), "pw.x"], stdin=input_file, stdout=output_file, check=True)
         return
 
     def exec_dos(self):
@@ -563,7 +568,9 @@ class QEController:
         dos_out = "dos.out"
         dos.write(txt)
         dos.close()
-        os.system(f"dos.x < {dos_in} > {dos_out}")
+        # os.system(f"dos.x < {dos_in} > {dos_out}")
+        with open(dos_in, 'r') as input_file, open(dos_out, 'w') as output_file:
+            subprocess.run(["dos.x"], stdin=input_file, stdout=output_file, check=True)
         return
 
     def exec_pdos(self):
@@ -579,7 +586,9 @@ class QEController:
         dos_out = "pdos.out"
         dos.write(txt)
         dos.close()
-        os.system(f"projwfc.x < {dos_in} > {dos_out}")
+        # os.system(f"projwfc.x < {dos_in} > {dos_out}")
+        with open(dos_in, 'r') as input_file, open(dos_out, 'w') as output_file:
+            subprocess.run(["projwfc.x"], stdin=input_file, stdout=output_file, check=True)
         return
     
     def exec_dfpt(self, txt="", phdos=True):
@@ -595,7 +604,17 @@ class QEController:
         out_file = f"{self.prefix}.ph.out"
         wf.write(txt)
         wf.close()
-        subprocess.run(f'ph.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+        # subprocess.run(f'ph.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+
+        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
+            subprocess.run(
+                ["ph.x"],         # コマンドをリスト形式で指定
+                stdin=input_file, # 入力ファイルをstdinに接続
+                stdout=output_file, # 出力ファイルをstdoutに接続
+                check=True,        # コマンドが失敗した場合に例外を発生させる
+                capture_output=True, # 標準出力と標準エラーをキャプチャ（必要に応じて）
+                text=True          # 出力を文字列として処理
+            )
 
         txt = f"""&input
 fildyn = '{self.prefix}.dyn'
@@ -607,7 +626,17 @@ flfrc = '{self.prefix}.fc'
         out_file = f"{self.prefix}.q2r.out"
         wf.write(txt)
         wf.close()
-        subprocess.run(f'q2r.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+        # subprocess.run(f'q2r.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+
+        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
+            subprocess.run(
+                ["q2r.x"],         # コマンドをリスト形式で指定
+                stdin=input_file,  # 入力ファイルをstdinに接続
+                stdout=output_file, # 出力ファイルをstdoutに接続
+                check=True,         # コマンドが失敗した場合に例外を発生させる
+                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
+                text=True           # 出力を文字列として処理
+            )
 
         txt = f"""&input
 flfrc = '{self.prefix}.fc'
@@ -624,7 +653,16 @@ nk3 = {self.kpoints[2]},
         out_file = f"{self.prefix}.matdyn.dos.out"
         wf.write(txt)
         wf.close()
-        subprocess.run(f'matdyn.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+        # subprocess.run(f'matdyn.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
+            subprocess.run(
+                ["matdyn.x"],         # コマンドをリスト形式で指定
+                stdin=input_file,     # 入力ファイルをstdinに接続
+                stdout=output_file,   # 出力ファイルをstdoutに接続
+                check=True,           # コマンドが失敗した場合に例外を発生させる
+                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
+                text=True             # 出力を文字列として処理
+            )
         return
 
 
