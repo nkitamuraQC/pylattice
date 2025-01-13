@@ -1,6 +1,6 @@
 import copy, os
 import numpy as np
-
+import subprocess
 
 class QEMD:
     def __init__(
@@ -56,7 +56,8 @@ class QEMD:
         if isinstance(self.degauss, float):
             self.qe_ctrl.occupations = "smearing"
             self.qe_ctrl.degauss = self.degauss
-        os.system(f"mkdir -p {self.qe_ctrl.outdir}")
+        # os.system(f"mkdir -p {self.qe_ctrl.outdir}")
+        subprocess.run(["mkdir", "-p", self.qe_ctrl.outdir], check=True)
         if n_para is None:
             self.qe_ctrl.exec()
         else:
