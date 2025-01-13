@@ -1,6 +1,7 @@
 from pylat.template import *
 import pathlib, os
 import numpy as np
+import subprocess
 
 
 class LatticeModel_gen:
@@ -33,7 +34,8 @@ class LatticeModel_gen:
         wf = open(name, "w")
         wf.write(temp)
         wf.close()
-        os.system(f"{self.vmcdry_path} {name}")
+        # os.system(f"{self.vmcdry_path} {name}")
+        subprocess.run([self.vmcdry_path, name], check=True)
         os.chdir("..")
         return
 
