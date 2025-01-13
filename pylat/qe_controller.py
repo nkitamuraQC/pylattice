@@ -4,6 +4,7 @@ import periodictable
 import numpy as np
 import pathlib
 from pylat.get_section_cryspy import get_section_for_cryspy
+import subprocess
 
 def get_section(myclass, occ):
     if myclass.calculation == "vc-md":
@@ -327,6 +328,28 @@ class QEController:
         self.coord_type = coord_type
         self.do_cryspy = False
 
+        self.dfpt_str_list = [
+            "fildyn",
+        ]
+
+        self.dfpt_section = [
+            "tr2_ph",
+	        "prefix",
+	        "outdir",
+	        "fildyn",
+	        "ldisp",
+	        "nq1",
+	        "nq2",
+	        "nq3",
+        ]
+        self.tr2_ph = "1.0d-14"
+        self.fildyn = f'{self.prefix}.dyn'
+        self.ldisp = ".true."
+        self.nq1 = 2
+        self.nq2 = 2
+        self.nq3 = 2
+
+
         self.pseudo_dict = pseudo_dict
         self.nbnd = None
 
@@ -558,6 +581,52 @@ class QEController:
         dos.close()
         os.system(f"projwfc.x < {dos_in} > {dos_out}")
         return
+    
+    def exec_dfpt(self, txt="", phdos=True):
+        txt += f"{self.prefix} phonon\n"
+        txt += "&inputph \n"
+        for card in self.dfpt_section:
+            if card in self.dfpt_str_list:
+                txt += f"{card} = '{self[card]}'\n"
+            else:
+                txt += f"{card} = {self[card]}\n"
+        wf = open(f"{self.prefix}.ph.in", "w")
+        in_file = f"{self.prefix}.ph.in"
+        out_file = f"{self.prefix}.ph.out"
+        wf.write(txt)
+        wf.close()
+        subprocess.run(f'ph.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+
+        txt = f"""&input
+fildyn = '{self.prefix}.dyn'
+flfrc = '{self.prefix}.fc'
+/
+        """
+        wf = open(f"{self.prefix}.q2r.in", "w")
+        in_file = f"{self.prefix}.q2r.in"
+        out_file = f"{self.prefix}.q2r.out"
+        wf.write(txt)
+        wf.close()
+        subprocess.run(f'q2r.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+
+        txt = f"""&input
+flfrc = '{self.prefix}.fc'
+asr = 'crystal'
+dos = .true.
+nk1 = {self.kpoints[0]},
+nk2 = {self.kpoints[1]},
+nk3 = {self.kpoints[2]},
+/
+        """
+
+        wf = open(f"{self.prefix}.matdyn.dos.in", "w")
+        in_file = f"{self.prefix}.matdyn.dos.in"
+        out_file = f"{self.prefix}.matdyn.dos.out"
+        wf.write(txt)
+        wf.close()
+        subprocess.run(f'matdyn.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
+        return
+
 
     def __len__(self):
         return len(self.__dict__)
