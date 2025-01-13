@@ -2,7 +2,7 @@
 import os
 import numpy as np
 from pylat.template_respack import *
-
+import subprocess
 
 def get_volume(qe_cls):
     lattice = qe_cls.lattice
@@ -131,36 +131,66 @@ class RESPACKController:
         util = self.qe2respack_path
         work = self.workpath
         filename = self.filename
+
         if self.calctype == "calc_wannier":
-            os.system(
-                "python {util}/qe2respack.py {work}/{prefix}.save".format(
-                    util=util, work=work, prefix=self.prefix
-                )
+            # 実行コマンド1: python qe2respack.py
+            subprocess.run(
+                ["python", f"{util}/qe2respack.py", f"{work}/{self.prefix}.save"],
+                check=True
             )
-            os.system(
-                "{util}/calc_wannier < {filename} > {filename}_wan.out".format(
-                    util=util, filename=filename
+            # 実行コマンド2: calc_wannier
+            with open(filename, "r") as infile, open(f"{filename}_wan.out", "w") as outfile:
+                subprocess.run(
+                    [f"{util}/calc_wannier"], 
+                    stdin=infile,
+                    stdout=outfile,
+                    check=True
                 )
-            )
+
         elif self.calctype == "calc_chiqw":
             if self.MPI > 1:
-                os.system(
-                    "OMP_NUM_THREADS=1 mpirun -np {MPI} calc_chiqw < {filename} > {filename}_chi.out".format(
-                        filename=filename, MPI=self.MPI
-                    )
+                # 実行コマンド: MPIありの場合
+                subprocess.run(
+                    [
+                        "mpirun",
+                        "-np",
+                        str(self.MPI),
+                        "calc_chiqw"
+                    ],
+                    stdin=open(filename, "r"),
+                    stdout=open(f"{filename}_chi.out", "w"),
+                    env={"OMP_NUM_THREADS": "1"},
+                    check=True
                 )
             else:
-                os.system(
-                    "calc_chiqw < {filename} > {filename}_chi.out".format(
-                        filename=filename, MPI=self.MPI
-                    )
-                )
+                # 実行コマンド: MPIなしの場合
+                with open(filename, "r") as infile, open(f"{filename}_chi.out", "w") as outfile:
+                    subprocess.run(
+                        ["calc_chiqw"],
+                        stdin=infile,
+                        stdout=outfile,
+                        check=True
+                    ) 
+
         elif self.calctype == "calc_w3d":
-            os.system(
-                "calc_w3d < {filename} > {filename}_w.out".format(filename=filename)
-            )
+            # 実行コマンド: calc_w3d
+            with open(filename, "r") as infile, open(f"{filename}_w.out", "w") as outfile:
+                subprocess.run(
+                    ["calc_w3d"],
+                    stdin=infile,
+                    stdout=outfile,
+                    check=True
+                )
+
         elif self.calctype == "calc_j3d":
-            os.system(
-                "calc_j3d < {filename} > {filename}_j.out".format(filename=filename)
-            )
+            # 実行コマンド: calc_j3d
+            with open(filename, "r") as infile, open(f"{filename}_j.out", "w") as outfile:
+                subprocess.run(
+                    ["calc_j3d"],
+                    stdin=infile,
+                    stdout=outfile,
+                    check=True
+                )
+
         return
+
