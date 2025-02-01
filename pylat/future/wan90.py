@@ -1,14 +1,14 @@
 from pylat.future.wan90_template import *
 import os
 import subprocess
-
+from pylat.k_path import SeekPath
 
 class Wannier90:
     def __init__(self, qe_ctrl):
         self.qe_ctrl = qe_ctrl
         self.target_dicts = {"Fe": ["dxy", "dyz"]}
 
-    def write_wan90(self, win_min, win_max, nw=5):
+    def write_wan90(self, win_min, win_max, nw=5, use_seekpath=True):
         with open(self.qe_ctrl.log, "r") as file:
             for line in file:
                 if "number of Kohn-Sham states" in line:
@@ -49,7 +49,19 @@ class Wannier90:
             coord_z = self.qe_ctrl.gauss_center[i][2]
             txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
         txt += "end projections \n"
-        txt += wan90_kpath
+        if use_seekpath:
+            k_txt = ""
+            sp = SeekPath(self.qe_ctrl)
+            sp.exec()
+            path = sp.path
+            kcoord = sp.coord
+            for p in path:
+                kcoord1 = kcoord[p[0]]
+                kcoord2 = kcoord[p[1]]
+                k_txt += f"{p[0]} {kcoord1[0]} {kcoord1[1]} {kcoord1[2]} {p[1]} {kcoord2[0]} {kcoord2[1]} {kcoord2[2]}\n"
+            txt += k_txt
+        else:
+            txt += wan90_kpath
         txt += "\n"
         
         txt += wan90_temp2.format(
