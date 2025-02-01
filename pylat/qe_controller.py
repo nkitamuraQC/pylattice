@@ -664,6 +664,30 @@ nk3 = {self.kpoints[2]},
                 text=True             # 出力を文字列として処理
             )
         return
+    
+    def exec_gipaw(self, q_gipaw=0.01):
+        txt = f"""&inputgipaw
+job = 'nmr'
+prefix = '{self.prefix}'
+tmp_dir = '{self.outdir}'
+q_gipaw = {q_gipaw}
+use_nmr_macroscopic_shape = .true.
+/"""    
+        in_file = f"{self.prefix}.nmr.in"
+        out_file = f"{self.prefix}.nmr.out"
+        wf = open(f"{self.prefix}.nmr.in", "w")
+        wf.write(txt)
+        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
+            subprocess.run(
+                ["gipaw.x"],         # コマンドをリスト形式で指定
+                stdin=input_file,  # 入力ファイルをstdinに接続
+                stdout=output_file, # 出力ファイルをstdoutに接続
+                check=True,         # コマンドが失敗した場合に例外を発生させる
+                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
+                text=True           # 出力を文字列として処理
+            )
+        return
+    
 
 
     def __len__(self):
