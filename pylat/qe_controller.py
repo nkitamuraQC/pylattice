@@ -6,289 +6,65 @@ import pathlib
 from pylat.get_section_cryspy import get_section_for_cryspy
 import subprocess
 
-def get_section(myclass, occ):
-    if myclass.calculation == "vc-md":
-        if "tetrahedra" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
+def get_default_section(myclass, occ):
+    if "tetrahedra" in occ:
+        section = {
+            "&control": [
+                "prefix",
+                "calculation",
+                "outdir",
+                "pseudo_dir",
+                "tstress",
+                "tprnfor",
+                "wf_collect",
+                "restart_mode",
+            ],
+            "&system": [
+                "ibrav",
+                "nat",
+                "ntyp",
+                "ecutwfc",
+                "ecutrho",
+                "occupations",
+                "nosym",
+                "noinv",
+            ],
+            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+        }
 
-        if "smearing" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "degauss",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
+    elif occ == "smearing":
+        section = {
+            "&control": [
+                "prefix",
+                "calculation",
+                "outdir",
+                "pseudo_dir",
+                "tstress",
+                "tprnfor",
+                "wf_collect",
+                "restart_mode",
+            ],
+            "&system": [
+                "ibrav",
+                "nat",
+                "ntyp",
+                "ecutwfc",
+                "ecutrho",
+                "occupations",
+                "nosym",
+                "noinv",
+                "degauss",
+            ],
+            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+        }
+    return section
 
-    elif myclass.calculation == "md":
-        if "tetrahedra" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": [],
-            }
-
-        elif "smearing" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "degauss",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": [],
-            }
-    elif myclass.calculation == "vc-relax":
-        if "tetrahedra" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
-
-        if "smearing" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "degauss",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
-
-    elif myclass.calculation == "relax":
-        if "tetrahedra" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
-
-        if "smearing" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "dt",
-                    "nstep",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "nosym",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "degauss",
-                ],
-                "&electrons": ["conv_thr"],
-                "&ions": ["ion_temperature", "tempw"],
-                "&cell": ["press"],
-            }
-
-    else:
-        if "tetrahedra" in occ:
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "nosym",
-                    "noinv",
-                ],
-                "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
-            }
-
-        elif occ == "smearing":
-            section = {
-                "&control": [
-                    "prefix",
-                    "calculation",
-                    "outdir",
-                    "pseudo_dir",
-                    "tstress",
-                    "tprnfor",
-                    "wf_collect",
-                    "restart_mode",
-                ],
-                "&system": [
-                    "ibrav",
-                    "nat",
-                    "ntyp",
-                    "ecutwfc",
-                    "ecutrho",
-                    "occupations",
-                    "nosym",
-                    "noinv",
-                    "degauss",
-                ],
-                "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
-            }
+def get_section(myclass, occ, section):
+    section = get_default_section(myclass, occ)
+    if "vc" in myclass.calculation:
+        section.update({"&cell": ["press"]})
+    if "md" in myclass.calculation:
+        section.update({"&ions": ["ion_temperature", "tempw"]})
     return section
 
 
