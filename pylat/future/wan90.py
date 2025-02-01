@@ -6,6 +6,7 @@ import subprocess
 class Wannier90:
     def __init__(self, qe_ctrl):
         self.qe_ctrl = qe_ctrl
+        self.target_dicts = {"Fe": ["dxy", "dyz"]}
 
     def write_wan90(self, win_min, win_max, nw=5):
         with open(self.qe_ctrl.log, "r") as file:
@@ -13,13 +14,34 @@ class Wannier90:
                 if "number of Kohn-Sham states" in line:
                     band_count = int(line.split("=")[1].strip())
                     print(f"Number of Kohn-Sham states (bands): {band_count}")
+                    break
         self.qe_ctrl.parse_gauss()
         txt = ""
         txt += wan90_temp0.format(
             nb=band_count, nw=nw, dis_win_min=win_min, dis_win_max=win_max
         )
-        txt += "begin projections \n"
-        txt += ""
+        txt += "\n"
+        txt += "begin Unit_Cell_Cart \n"
+        txt += "Ang \n"
+        for l in self.qe_ctrl.lattice:
+            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
+        txt += "End Unit_Cell_Cart \n"
+        txt += "Begin Projections \n"
+        sub_txt = ""
+        for k, v in self.target_dicts.items():
+            sub_txt += f"{k}:"
+            for idx, v_ in enumerate(v):
+                if idx < len(v) - 1:
+                    sub_txt += "{v_};"
+                else:
+                    sub_txt += "{v_}\n"
+
+        txt += "End Projections"
+        txt += "\n"
+        txt += "Begin  ATOMS_FRAC\n"
+        for at in self.qe_ctrl.geoms:
+            txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
+        txt += "End ATOMS_FRAC \n"
         for i in range(self.qe_ctrl.N_initial_guess):
             type_orb = self.qe_ctrl.gaussian_orb[i][0]
             coord_x = self.qe_ctrl.gauss_center[i][0]
@@ -27,16 +49,9 @@ class Wannier90:
             coord_z = self.qe_ctrl.gauss_center[i][2]
             txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
         txt += "end projections \n"
-        txt += wan90_temp1
-        txt += "begin unit_cell_cart \n"
-        txt += "angstrom \n"
-        for l in self.qe_ctrl.lattice:
-            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
-        txt += "end unit_cell_cart \n"
-        txt += "begin atoms_frac \n"
-        for at in self.qe_ctrl.geoms:
-            txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
-        txt += "end atoms_frac \n"
+        txt += wan90_kpath
+        txt += "\n"
+        
         txt += wan90_temp2.format(
             nkx=self.qe_ctrl.kpoints[0],
             nky=self.qe_ctrl.kpoints[1],
