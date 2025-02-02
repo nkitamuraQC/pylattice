@@ -236,15 +236,6 @@ class QEController:
         if not self.crystal_kpoint and self.calculation != "nscf":
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
-        #else:
-        #    txt += "K_POINTS \n"
-        #    nk = self.kpoints[0] * self.kpoints[1] * self.kpoints[2]
-        #    txt += f"{nk} \n"
-        #    kxs, kys, kzs, w = self.get_kpoint()
-        #    for kx in kxs:
-        #        for ky in kys:
-        #            for kz in kzs:
-        #                txt += f"{kx} {ky} {kz} {w}\n"
 
         return txt
     

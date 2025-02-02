@@ -44,18 +44,8 @@ class Wannier90:
         for at in self.qe_ctrl.geoms:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "End ATOMS_FRAC \n"
-<<<<<<< Updated upstream
-        for i in range(self.qe_ctrl.N_initial_guess):
-            type_orb = self.qe_ctrl.gaussian_orb[i][0]
-            coord_x = self.qe_ctrl.gauss_center[i][0]
-            coord_y = self.qe_ctrl.gauss_center[i][1]
-            coord_z = self.qe_ctrl.gauss_center[i][2]
-            txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
-        txt += "end projections \n"
-=======
         txt += "\n"
         txt += "Begin Kpoint_path\n"
->>>>>>> Stashed changes
         if use_seekpath:
             k_txt = ""
             sp = SeekPath(self.qe_ctrl)
@@ -67,12 +57,9 @@ class Wannier90:
                 kcoord2 = kcoord[p[1]]
                 k_txt += f"{p[0]} {kcoord1[0]} {kcoord1[1]} {kcoord1[2]} {p[1]} {kcoord2[0]} {kcoord2[1]} {kcoord2[2]}\n"
             txt += k_txt
+            txt += "End Kpoint_path\n"
         else:
             txt += wan90_kpath
-<<<<<<< Updated upstream
-=======
-        txt += "End Kpoint_path\n"
->>>>>>> Stashed changes
         txt += "\n"
         
         txt += wan90_temp2.format(
