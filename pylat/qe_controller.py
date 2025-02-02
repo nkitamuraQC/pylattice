@@ -59,7 +59,11 @@ def get_default_section(myclass, occ):
         }
     return section
 
+<<<<<<< Updated upstream
 def get_section(myclass, occ, section):
+=======
+def get_section(myclass, occ):
+>>>>>>> Stashed changes
     section = get_default_section(myclass, occ)
     if "vc" in myclass.calculation:
         section.update({"&cell": ["press"]})
@@ -103,6 +107,7 @@ class QEController:
         self.tempw = 300.0
         self.coord_type = coord_type
         self.do_cryspy = False
+        self.kmesh_pl_path = "/Users/qclove00/qe-7.1/external/wannier90/utility/"
 
         self.dfpt_str_list = [
             "fildyn",
@@ -137,23 +142,26 @@ class QEController:
 
         self.nat = len(self.geoms)
         self.ntyp = len(self.atoms)
-        self.gauss = [
-            [0, "dxy", 0.2],
-            [0, "dyz", 0.2],
-            [0, "dxz", 0.2],
-            [0, "dz2", 0.2],
-            [0, "dx2-y2", 0.2],
-        ]
-        self.N_initial_guess = 5
 
     def get_kpoint(self):
         dx = 1 / self.kpoints[0]
         dy = 1 / self.kpoints[1]
         dz = 1 / self.kpoints[2]
 
+        #if self.nosym and self.noinv:
+        #    kxs = np.linspace(-0.5, 0.5, self.kpoints[0])
+        #    kys = np.linspace(-0.5, 0.5, self.kpoints[1])
+        #    kzs = np.linspace(-0.5, 0.5, self.kpoints[2])
+        
+        #else:
+        #    kxs = [dx * i for i in range(self.kpoints[0])]
+        #    kys = [dy * i for i in range(self.kpoints[1])]
+        #    kzs = [dz * i for i in range(self.kpoints[2])]
+        
         kxs = [dx * i for i in range(self.kpoints[0])]
         kys = [dy * i for i in range(self.kpoints[1])]
         kzs = [dz * i for i in range(self.kpoints[2])]
+        
         weight = dx * dy * dz
         return kxs, kys, kzs, weight
 
@@ -229,7 +237,9 @@ class QEController:
                 else:
                     val = self[a]
                 if isinstance(val, str):
-                    if a != "conv_thr" and val != ".true." and val != ".false.":
+                    if a == "occupations" and self.calculation == "nscf":
+                        pass
+                    elif a != "conv_thr" and val != ".true." and val != ".false.":
                         txt += f"{a} = '{val}', \n"
                     else:
                         txt += f"{a} = {val}, \n"
@@ -249,18 +259,18 @@ class QEController:
         for l in self.lattice:
             txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
 
-        if not self.crystal_kpoint:
+        if not self.crystal_kpoint and self.calculation != "nscf":
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
-        else:
-            txt += "K_POINTS \n"
-            nk = self.kpoints[0] * self.kpoints[1] * self.kpoints[2]
-            txt += f"{nk} \n"
-            kxs, kys, kzs, w = self.get_kpoint()
-            for kx in kxs:
-                for ky in kys:
-                    for kz in kzs:
-                        txt += f"{kx} {ky} {kz} {w}\n"
+        #else:
+        #    txt += "K_POINTS \n"
+        #    nk = self.kpoints[0] * self.kpoints[1] * self.kpoints[2]
+        #    txt += f"{nk} \n"
+        #    kxs, kys, kzs, w = self.get_kpoint()
+        #    for kx in kxs:
+        #        for ky in kys:
+        #            for kz in kzs:
+        #                txt += f"{kx} {ky} {kz} {w}\n"
 
         return txt
     
@@ -294,11 +304,19 @@ class QEController:
         return txt
 
     def write_input(self, inp):
-        self.filename = self.prefix+".in"
-        self.log = self.prefix+".out"
-        wf = open(self.prefix+".in", "w")
+        self.filename = self.prefix+f"_{self.calculation}.in"
+        self.log = self.prefix+f"_{self.calculation}.out"
+        wf = open(self.filename, "w")
         wf.write(inp)
         wf.close()
+
+        if self.calculation == "nscf":
+            command = [f"{self.kmesh_pl_path}/kmesh.pl", f"{self.kpoints[0]}", f"{self.kpoints[0]}", f"{self.kpoints[0]}"]
+            
+            # subprocess を使用してコマンドを実行し、出力をファイルにリダイレクト
+            with open(self.filename, "a") as f:  # 'a' は追記モード
+                subprocess.run(command, stdout=f, stderr=subprocess.PIPE, text=True)
+
         return
     
 
@@ -315,6 +333,7 @@ class QEController:
     def exec(self):
         txt = self.make_input()
         self.write_input(txt)
+
         #os.system("pw.x < {} > {}".format(self.filename, self.log))
         with open(self.filename, 'r') as input_file, open(self.log, 'w') as output_file:
             subprocess.run(["pw.x"], stdin=input_file, stdout=output_file, check=True)

@@ -6,7 +6,8 @@ from pylat.k_path import SeekPath
 class Wannier90:
     def __init__(self, qe_ctrl):
         self.qe_ctrl = qe_ctrl
-        self.target_dicts = {"Fe": ["dxy", "dyz"]}
+        self.prefix = qe_ctrl.prefix
+        self.target_dicts = {"Fe": ["dxy", "dyz", "dxz", "dz2", "dx2-y2"]}
 
     def write_wan90(self, win_min, win_max, nw=5, use_seekpath=True):
         with open(self.qe_ctrl.log, "r") as file:
@@ -15,7 +16,7 @@ class Wannier90:
                     band_count = int(line.split("=")[1].strip())
                     print(f"Number of Kohn-Sham states (bands): {band_count}")
                     break
-        self.qe_ctrl.parse_gauss()
+        # self.qe_ctrl.parse_gauss()
         txt = ""
         txt += wan90_temp0.format(
             nb=band_count, nw=nw, dis_win_min=win_min, dis_win_max=win_max
@@ -26,22 +27,24 @@ class Wannier90:
         for l in self.qe_ctrl.lattice:
             txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} \n"
         txt += "End Unit_Cell_Cart \n"
+        txt += "\n"
         txt += "Begin Projections \n"
         sub_txt = ""
         for k, v in self.target_dicts.items():
             sub_txt += f"{k}:"
             for idx, v_ in enumerate(v):
                 if idx < len(v) - 1:
-                    sub_txt += "{v_};"
+                    sub_txt += f"{v_};"
                 else:
-                    sub_txt += "{v_}\n"
-
-        txt += "End Projections"
+                    sub_txt += f"{v_}\n"
+        txt += sub_txt
+        txt += "End Projections\n"
         txt += "\n"
         txt += "Begin  ATOMS_FRAC\n"
         for at in self.qe_ctrl.geoms:
             txt += f"{at[0]}  {at[1][0]:.10f}  {at[1][1]:.10f}  {at[1][2]:.10f} \n"
         txt += "End ATOMS_FRAC \n"
+<<<<<<< Updated upstream
         for i in range(self.qe_ctrl.N_initial_guess):
             type_orb = self.qe_ctrl.gaussian_orb[i][0]
             coord_x = self.qe_ctrl.gauss_center[i][0]
@@ -49,6 +52,10 @@ class Wannier90:
             coord_z = self.qe_ctrl.gauss_center[i][2]
             txt += f"f={coord_x}, {coord_y}, {coord_z}: {type_orb}\n"
         txt += "end projections \n"
+=======
+        txt += "\n"
+        txt += "Begin Kpoint_path\n"
+>>>>>>> Stashed changes
         if use_seekpath:
             k_txt = ""
             sp = SeekPath(self.qe_ctrl)
@@ -62,6 +69,10 @@ class Wannier90:
             txt += k_txt
         else:
             txt += wan90_kpath
+<<<<<<< Updated upstream
+=======
+        txt += "End Kpoint_path\n"
+>>>>>>> Stashed changes
         txt += "\n"
         
         txt += wan90_temp2.format(
@@ -69,6 +80,7 @@ class Wannier90:
             nky=self.qe_ctrl.kpoints[1],
             nkz=self.qe_ctrl.kpoints[2],
         )
+        txt += "\n\n"
 
         kxs, kys, kzs, w = self.qe_ctrl.get_kpoint()
 
@@ -79,6 +91,7 @@ class Wannier90:
                     txt += f"{kx} {ky} {kz}\n"
 
         txt += "end kpoints \n"
+        txt += "\n"
         win_in = f"{self.qe_ctrl.prefix}.win"
         wf = open(win_in, "w")
         wf.write(txt)
@@ -117,4 +130,4 @@ class Wannier90:
         # 3. 実行済みでコメントアウトされた部分の再実装（必要に応じて有効化）
         # subprocess.run(["wannier90.x", self.prefix], check=True)
 
-    return
+        return

@@ -15,9 +15,7 @@ G   0.00000     0.00000     0.00000   X   0.50000     0.50000     0.00000
 End Kpoint_path
 """
 
-wan90_temp2 = """
-mp_grid = {nkx} {nky} {nkz}
-"""
+wan90_temp2 = """mp_grid = {nkx} {nky} {nkz}"""
 
 wan90_pw2wan = """&inputpp
     outdir='{outdir}'

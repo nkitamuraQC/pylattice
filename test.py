@@ -7,7 +7,7 @@ from pylat.qe_md import QEMD
 import numpy as np
 from pylat.md_analyzer import MD_Analyzer
 from pylat.md_properties import MD_Properties
-
+from pylat.future.wan90 import Wannier90
 
 def _test_crystal_lattice():
     # cifname = "cif/TMTSF2AsF6.cif"
@@ -115,7 +115,7 @@ def test_young():
     return
 
 
-def _test_wan90():
+def test_wan90():
     cifname = "./cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
         "Fe": "Fe.pbe-spn-kjpaw_psl.1.0.0.UPF",
@@ -127,14 +127,21 @@ def _test_wan90():
     qe.exec()
     # qe.exec_dos()
     # qe.exec_pdos()
+    qe.calculation = "nscf"
+    qe.nosym = True
+    qe.noinv = True
+    qe.exec()
+    w90 = Wannier90(qe)
 
-    # qe.write_wan90(win_min="1.1049d01", win_max="1.8929d01", nw=5)
-    # qe.do_wan90()
+    w90.write_wan90(win_min="1.1049d01", win_max="1.8929d01", nw=5)
+    w90.do_wan90()
     return
+
 
 
 if __name__ == "__main__":
     #test_qemd()
-    test_qe_only()
+    #test_qe_only()
     #test_analyzer()
     #test_young()
+    test_wan90()

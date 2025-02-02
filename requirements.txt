@@ -2,3 +2,5 @@ ase
 pymatgen
 periodictable
 numpy
+seekpath
+scikit-learn
