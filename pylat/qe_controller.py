@@ -7,6 +7,7 @@ from pylat.get_section_cryspy import get_section_for_cryspy
 import subprocess
 
 def get_default_section(myclass, occ):
+    ## meta classが使える可能性
     if "tetrahedra" in occ:
         section = {
             "&control": [
