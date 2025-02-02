@@ -8,56 +8,33 @@ import subprocess
 
 def get_default_section(myclass, occ):
     ## meta classが使える可能性
-    if "tetrahedra" in occ:
-        section = {
-            "&control": [
-                "prefix",
-                "calculation",
-                "outdir",
-                "pseudo_dir",
-                "tstress",
-                "tprnfor",
-                "wf_collect",
-                "restart_mode",
-            ],
-            "&system": [
-                "ibrav",
-                "nat",
-                "ntyp",
-                "ecutwfc",
-                "ecutrho",
-                "occupations",
-                "nosym",
-                "noinv",
-            ],
-            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
-        }
+    # if "tetrahedra" in occ:
+    section = {
+        "&control": [
+            "prefix",
+            "calculation",
+            "outdir",
+            "pseudo_dir",
+            "tstress",
+            "tprnfor",
+            "wf_collect",
+            "restart_mode",
+         ],
+        "&system": [
+            "ibrav",
+            "nat",
+            "ntyp",
+            "ecutwfc",
+            "ecutrho",
+            "occupations",
+            "nosym",
+            "noinv",
+        ],
+        "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
+    }
 
-    elif occ == "smearing":
-        section = {
-            "&control": [
-                "prefix",
-                "calculation",
-                "outdir",
-                "pseudo_dir",
-                "tstress",
-                "tprnfor",
-                "wf_collect",
-                "restart_mode",
-            ],
-            "&system": [
-                "ibrav",
-                "nat",
-                "ntyp",
-                "ecutwfc",
-                "ecutrho",
-                "occupations",
-                "nosym",
-                "noinv",
-                "degauss",
-            ],
-            "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
-        }
+    if occ == "smearing":
+        section["&system"].append("degauss")
     return section
 
 def get_section(myclass, occ):
