@@ -59,11 +59,7 @@ def get_default_section(myclass, occ):
         }
     return section
 
-<<<<<<< Updated upstream
-def get_section(myclass, occ, section):
-=======
 def get_section(myclass, occ):
->>>>>>> Stashed changes
     section = get_default_section(myclass, occ)
     if "vc" in myclass.calculation:
         section.update({"&cell": ["press"]})
