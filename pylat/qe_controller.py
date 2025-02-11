@@ -223,12 +223,12 @@ class QEController:
                     val = ".false."
                 else:
                     val = self[a]
-	        if a == "starting_magnetization":
+	        if a == "starting_magnetization" and self.nspin == 2:
 		    lis = self[a]
 		    for imag, x in enumerate(lis):
 			if x is not None:
 			    txt += f"{a}({imag+1}) = {x}\n"
-	        if a == "Hubbard_U":
+	        if a == "Hubbard_U" and self.lda_plus_u:
 		    lis = self[a]
 		    for imag, x in enumerate(lis):
 			if x is not None:
@@ -241,7 +241,11 @@ class QEController:
                     else:
                         txt += f"{a} = {val}, \n"
                 else:
-                    txt += f"{a} = {val}, \n"
+		    if a == "tot_magnetization":
+			if self.nspin == 2:
+			    txt += f"{a} = {val}, \n"
+		    else:
+                        txt += f"{a} = {val}, \n"
                 if a == "nbnd" and self.calculation == "nscf":
                     txt += f"{a} = {val}, \n"
 
