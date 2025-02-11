@@ -35,6 +35,14 @@ def get_default_section(myclass, occ):
 
     if occ == "smearing":
         section["&system"].append("degauss")
+    if myclass.nspin == 2:
+	section["&system"].append("nspin")
+	section["&system"].append("tot_magnetization")
+	section["&system"].append("starting_magnetization")
+    if myclass.lda_plus_u:
+	section["&system"].append("lda_plus_u")
+	section["&system"].append("Hubbard_U")
+	    
     return section
 
 def get_section(myclass, occ):
@@ -81,6 +89,11 @@ class QEController:
         self.tempw = 300.0
         self.coord_type = coord_type
         self.do_cryspy = False
+	self.nspin = None
+        self.starting_magnetization = [None, 0.5, -0.5]
+        self.tot_magnetization = 0.0
+	self.lda_plus_u = False
+        self.Hubbard_U = [None, 8.0, 8.0]
         self.kmesh_pl_path = "/Users/qclove00/qe-7.1/external/wannier90/utility/"
 
         self.dfpt_str_list = [
