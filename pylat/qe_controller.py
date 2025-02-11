@@ -6,7 +6,7 @@ import pathlib
 from pylat.get_section_cryspy import get_section_for_cryspy
 import subprocess
 
-def get_default_section(myclass, occ):
+def get_default_section(myclass: QEController, occ: str):
     ## meta classが使える可能性
     # if "tetrahedra" in occ:
     section = {
@@ -43,9 +43,12 @@ def get_default_section(myclass, occ):
 	section["&system"].append("lda_plus_u")
 	section["&system"].append("Hubbard_U")
     if myclass.tefield:
-	section["&system"].append("tefield")
-	section["&system"].append("dipfield")
-        self.dipfield = False
+	section["&control"].append("tefield")
+	section["&control"].append("dipfield")
+	section["&system"].append("edir")
+	section["&system"].append("emaxpos")
+	section["&system"].append("eopreg")
+	section["&system"].append("eamp")
     return section
 
 def get_section(myclass, occ):
