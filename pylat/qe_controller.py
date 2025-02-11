@@ -223,6 +223,11 @@ class QEController:
                     val = ".false."
                 else:
                     val = self[a]
+	        if a == "starting_magnetization":
+		    lis = self[a]
+		    for imag, x in enumerate(lis):
+			if x is not None:
+			    txt += f"{a}({imag+1}) = {x}\n"
                 if isinstance(val, str):
                     if a == "occupations" and self.calculation == "nscf":
                         pass
