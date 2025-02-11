@@ -228,6 +228,11 @@ class QEController:
 		    for imag, x in enumerate(lis):
 			if x is not None:
 			    txt += f"{a}({imag+1}) = {x}\n"
+	        if a == "Hubbard_U":
+		    lis = self[a]
+		    for imag, x in enumerate(lis):
+			if x is not None:
+			    txt += f"{a}({imag+1}) = {x}\n"
                 if isinstance(val, str):
                     if a == "occupations" and self.calculation == "nscf":
                         pass
