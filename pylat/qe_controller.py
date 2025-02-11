@@ -42,7 +42,10 @@ def get_default_section(myclass, occ):
     if myclass.lda_plus_u:
 	section["&system"].append("lda_plus_u")
 	section["&system"].append("Hubbard_U")
-	    
+    if myclass.tefield:
+	section["&system"].append("tefield")
+	section["&system"].append("dipfield")
+        self.dipfield = False
     return section
 
 def get_section(myclass, occ):
@@ -94,6 +97,12 @@ class QEController:
         self.tot_magnetization = 0.0
 	self.lda_plus_u = False
         self.Hubbard_U = [None, 8.0, 8.0]
+	self.tefield = False
+        self.dipfield = False
+	self.edir = 3
+        self.emaxpos = 0.45
+        self.eopreg = 0.10
+        self.eamp = 0.009723452336177272
         self.kmesh_pl_path = "/Users/qclove00/qe-7.1/external/wannier90/utility/"
 
         self.dfpt_str_list = [
