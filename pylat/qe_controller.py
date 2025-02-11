@@ -49,6 +49,8 @@ def get_default_section(myclass: QEController, occ: str):
 	section["&system"].append("emaxpos")
 	section["&system"].append("eopreg")
 	section["&system"].append("eamp")
+    if myclass.la2F:
+	section["&system"].append("la2F")
     return section
 
 def get_section(myclass, occ):
@@ -106,6 +108,7 @@ class QEController:
         self.emaxpos = 0.45
         self.eopreg = 0.10
         self.eamp = 0.009723452336177272
+	self.la2F = False
         self.kmesh_pl_path = "/Users/qclove00/qe-7.1/external/wannier90/utility/"
 
         self.dfpt_str_list = [
