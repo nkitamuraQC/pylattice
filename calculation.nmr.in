@@ -1,7 +1,0 @@
-&inputgipaw
-job = 'nmr'
-prefix = 'calculation'
-tmp_dir = './work'
-q_gipaw = 0.01
-use_nmr_macroscopic_shape = .true.
-/
