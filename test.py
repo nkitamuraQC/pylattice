@@ -74,6 +74,15 @@ def test_qe_only():
     inp = qe.make_input()
     qe.write_input(inp)
     qe.exec()
+
+    qe.tefield = True
+    qe.dipfield = True
+    qe.lda_plus_u = True
+    qe.nspin = 2
+
+    inp = qe.make_input()
+    qe.write_input(inp)
+    qe.exec()
     return
 
 
@@ -142,8 +151,7 @@ def test_wan90():
 
 if __name__ == "__main__":
     #test_qemd()
-    #test_qe_only()
+    test_qe_only()
     #test_analyzer()
     #test_young()
     #test_wan90()
-    test_dfpt()

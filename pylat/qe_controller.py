@@ -41,7 +41,6 @@ def get_default_section(myclass, occ: str):
         section["&system"].append("starting_magnetization")
     if myclass.lda_plus_u:
         section["&system"].append("lda_plus_u")
-        section["&system"].append("Hubbard_U")
     if myclass.tefield:
         section["&control"].append("tefield")
         section["&control"].append("dipfield")
@@ -98,10 +97,11 @@ class QEController:
         self.coord_type = coord_type
         self.do_cryspy = False
         self.nspin = None
-        self.starting_magnetization = [None, 0.5, -0.5]
+        self.starting_magnetization = [0.5, -0.5]
         self.tot_magnetization = 0.0
         self.lda_plus_u = False
-        self.Hubbard_U = [None, 8.0, 8.0]
+        self.Hubbard_U = [8.0, None]
+        self.target_hubbard_u_orb = ["3d", None]
         self.tefield = False
         self.dipfield = False
         self.edir = 3
@@ -246,11 +246,7 @@ class QEController:
                     for imag, x in enumerate(lis):
                         if x is not None:
                             txt += f"{a}({imag+1}) = {x}\n"
-                if a == "Hubbard_U" and self.lda_plus_u:
-                    lis = self[a]
-                    for imag, x in enumerate(lis):
-                        if x is not None:
-                            txt += f"{a}({imag+1}) = {x}\n"
+                    continue
                 if isinstance(val, str):
                     if a == "occupations" and self.calculation == "nscf":
                         pass
@@ -274,7 +270,13 @@ class QEController:
         if not self.crystal_kpoint and self.calculation != "nscf":
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
-
+        
+        if self.lda_plus_u:
+            txt += "\n"
+            txt += "HUBBARD (ortho-atomic)\n"
+            for idx, at in enumerate(self.atoms):
+                if self.Hubbard_U[idx] is not None and self.target_hubbard_u_orb[idx] is not None:
+                    txt += f"U {at[0]}-{self.target_hubbard_u_orb[idx]} {self.Hubbard_U[idx]}"
         return txt
     
     def make_input_for_cryspy(self, txt=""):
