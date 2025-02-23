@@ -13,7 +13,7 @@ See test.py
 ## Installation
 - Install mVMC
   - https://www.pasums.issp.u-tokyo.ac.jp/mvmc/en/
-- Install Qunatum ESPRESSO
+- Install Qunatum ESPRESSO (tested at v7.1)
   - https://www.quantum-espresso.org
 
 ```shell
