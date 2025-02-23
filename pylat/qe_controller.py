@@ -6,7 +6,7 @@ import pathlib
 from pylat.get_section_cryspy import get_section_for_cryspy
 import subprocess
 
-def get_default_section(myclass: QEController, occ: str):
+def get_default_section(myclass, occ: str):
     ## meta classが使える可能性
     # if "tetrahedra" in occ:
     section = {
@@ -36,21 +36,21 @@ def get_default_section(myclass: QEController, occ: str):
     if occ == "smearing":
         section["&system"].append("degauss")
     if myclass.nspin == 2:
-	section["&system"].append("nspin")
-	section["&system"].append("tot_magnetization")
-	section["&system"].append("starting_magnetization")
+        section["&system"].append("nspin")
+        section["&system"].append("tot_magnetization")
+        section["&system"].append("starting_magnetization")
     if myclass.lda_plus_u:
-	section["&system"].append("lda_plus_u")
-	section["&system"].append("Hubbard_U")
+        section["&system"].append("lda_plus_u")
+        section["&system"].append("Hubbard_U")
     if myclass.tefield:
-	section["&control"].append("tefield")
-	section["&control"].append("dipfield")
-	section["&system"].append("edir")
-	section["&system"].append("emaxpos")
-	section["&system"].append("eopreg")
-	section["&system"].append("eamp")
+        section["&control"].append("tefield")
+        section["&control"].append("dipfield")
+        section["&system"].append("edir")
+        section["&system"].append("emaxpos")
+        section["&system"].append("eopreg")
+        section["&system"].append("eamp")
     if myclass.la2F:
-	section["&system"].append("la2F")
+        section["&system"].append("la2F")
     return section
 
 def get_section(myclass, occ):
@@ -97,22 +97,24 @@ class QEController:
         self.tempw = 300.0
         self.coord_type = coord_type
         self.do_cryspy = False
-	self.nspin = None
+        self.nspin = None
         self.starting_magnetization = [None, 0.5, -0.5]
         self.tot_magnetization = 0.0
-	self.lda_plus_u = False
+        self.lda_plus_u = False
         self.Hubbard_U = [None, 8.0, 8.0]
-	self.tefield = False
+        self.tefield = False
         self.dipfield = False
-	self.edir = 3
+        self.edir = 3
         self.emaxpos = 0.45
         self.eopreg = 0.10
         self.eamp = 0.009723452336177272
-	self.la2F = False
+        self.la2F = False
         self.kmesh_pl_path = "/Users/qclove00/qe-7.1/external/wannier90/utility/"
 
         self.dfpt_str_list = [
+            "prefix",
             "fildyn",
+            "outdir",
         ]
 
         self.dfpt_section = [
@@ -232,38 +234,32 @@ class QEController:
             print(k)
             txt += k + "\n"
             for a in self.section[k]:
-                if isinstance(self[a], bool) and self[a] == True:
+                print(a)
+                if self[a] == True and isinstance(self[a], bool):
                     val = ".true."
-                elif isinstance(self[a], bool) and self[a] == False:
+                elif self[a] == False and isinstance(self[a], bool):
                     val = ".false."
                 else:
                     val = self[a]
-	        if a == "starting_magnetization" and self.nspin == 2:
-		    lis = self[a]
-		    for imag, x in enumerate(lis):
-			if x is not None:
-			    txt += f"{a}({imag+1}) = {x}\n"
-	        if a == "Hubbard_U" and self.lda_plus_u:
-		    lis = self[a]
-		    for imag, x in enumerate(lis):
-			if x is not None:
-			    txt += f"{a}({imag+1}) = {x}\n"
+                if a == "starting_magnetization" and self.nspin == 2:
+                    lis = self[a]
+                    for imag, x in enumerate(lis):
+                        if x is not None:
+                            txt += f"{a}({imag+1}) = {x}\n"
+                if a == "Hubbard_U" and self.lda_plus_u:
+                    lis = self[a]
+                    for imag, x in enumerate(lis):
+                        if x is not None:
+                            txt += f"{a}({imag+1}) = {x}\n"
                 if isinstance(val, str):
                     if a == "occupations" and self.calculation == "nscf":
                         pass
                     elif a != "conv_thr" and val != ".true." and val != ".false.":
                         txt += f"{a} = '{val}', \n"
-                    else:
-                        txt += f"{a} = {val}, \n"
                 else:
-		    if a == "tot_magnetization":
-			if self.nspin == 2:
-			    txt += f"{a} = {val}, \n"
-		    else:
-                        txt += f"{a} = {val}, \n"
-                if a == "nbnd" and self.calculation == "nscf":
                     txt += f"{a} = {val}, \n"
-
+                if a == "nbnd" and self.calculation == "nscf":
+                    txt += f"{a} = {val}, \n"        
             txt += "/" + "\n"
         txt += "ATOMIC_SPECIES\n"
         for at in self.atoms:
@@ -392,104 +388,6 @@ class QEController:
         with open(dos_in, 'r') as input_file, open(dos_out, 'w') as output_file:
             subprocess.run(["projwfc.x"], stdin=input_file, stdout=output_file, check=True)
         return
-    
-    def exec_dfpt(self, txt="", phdos=True):
-        txt += f"{self.prefix} phonon\n"
-        txt += "&inputph \n"
-        for card in self.dfpt_section:
-            if card in self.dfpt_str_list:
-                txt += f"{card} = '{self[card]}'\n"
-            else:
-                txt += f"{card} = {self[card]}\n"
-        wf = open(f"{self.prefix}.ph.in", "w")
-        in_file = f"{self.prefix}.ph.in"
-        out_file = f"{self.prefix}.ph.out"
-        wf.write(txt)
-        wf.close()
-        # subprocess.run(f'ph.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
-
-        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
-            subprocess.run(
-                ["ph.x"],         # コマンドをリスト形式で指定
-                stdin=input_file, # 入力ファイルをstdinに接続
-                stdout=output_file, # 出力ファイルをstdoutに接続
-                check=True,        # コマンドが失敗した場合に例外を発生させる
-                capture_output=True, # 標準出力と標準エラーをキャプチャ（必要に応じて）
-                text=True          # 出力を文字列として処理
-            )
-
-        txt = f"""&input
-fildyn = '{self.prefix}.dyn'
-flfrc = '{self.prefix}.fc'
-/
-        """
-        wf = open(f"{self.prefix}.q2r.in", "w")
-        in_file = f"{self.prefix}.q2r.in"
-        out_file = f"{self.prefix}.q2r.out"
-        wf.write(txt)
-        wf.close()
-        # subprocess.run(f'q2r.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
-
-        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
-            subprocess.run(
-                ["q2r.x"],         # コマンドをリスト形式で指定
-                stdin=input_file,  # 入力ファイルをstdinに接続
-                stdout=output_file, # 出力ファイルをstdoutに接続
-                check=True,         # コマンドが失敗した場合に例外を発生させる
-                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
-                text=True           # 出力を文字列として処理
-            )
-
-        txt = f"""&input
-flfrc = '{self.prefix}.fc'
-asr = 'crystal'
-dos = .true.
-nk1 = {self.kpoints[0]},
-nk2 = {self.kpoints[1]},
-nk3 = {self.kpoints[2]},
-/
-        """
-
-        wf = open(f"{self.prefix}.matdyn.dos.in", "w")
-        in_file = f"{self.prefix}.matdyn.dos.in"
-        out_file = f"{self.prefix}.matdyn.dos.out"
-        wf.write(txt)
-        wf.close()
-        # subprocess.run(f'matdyn.x < {in_file} > {out_file}', shell=True, capture_output=True, text=True)
-        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
-            subprocess.run(
-                ["matdyn.x"],         # コマンドをリスト形式で指定
-                stdin=input_file,     # 入力ファイルをstdinに接続
-                stdout=output_file,   # 出力ファイルをstdoutに接続
-                check=True,           # コマンドが失敗した場合に例外を発生させる
-                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
-                text=True             # 出力を文字列として処理
-            )
-        return
-    
-    def exec_gipaw(self, q_gipaw=0.01):
-        txt = f"""&inputgipaw
-job = 'nmr'
-prefix = '{self.prefix}'
-tmp_dir = '{self.outdir}'
-q_gipaw = {q_gipaw}
-use_nmr_macroscopic_shape = .true.
-/"""    
-        in_file = f"{self.prefix}.nmr.in"
-        out_file = f"{self.prefix}.nmr.out"
-        wf = open(f"{self.prefix}.nmr.in", "w")
-        wf.write(txt)
-        with open(in_file, 'r') as input_file, open(out_file, 'w') as output_file:
-            subprocess.run(
-                ["gipaw.x"],         # コマンドをリスト形式で指定
-                stdin=input_file,  # 入力ファイルをstdinに接続
-                stdout=output_file, # 出力ファイルをstdoutに接続
-                check=True,         # コマンドが失敗した場合に例外を発生させる
-                capture_output=True,  # 標準出力と標準エラーをキャプチャ（必要に応じて）
-                text=True           # 出力を文字列として処理
-            )
-        return
-    
 
 
     def __len__(self):

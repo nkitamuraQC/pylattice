@@ -77,6 +77,7 @@ def test_qe_only():
     return
 
 
+
 def test_qemd():
     cifname = "cif/FeSe_mp-20120_primitive.cif"
     pseudo_dict = {
@@ -144,4 +145,5 @@ if __name__ == "__main__":
     #test_qe_only()
     #test_analyzer()
     #test_young()
-    test_wan90()
+    #test_wan90()
+    test_dfpt()
