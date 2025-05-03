@@ -29,6 +29,7 @@ def get_default_section(myclass, occ: str):
             "occupations",
             "nosym",
             "noinv",
+            "tot_charge",
         ],
         "&electrons": ["mixing_beta", "conv_thr", "electron_maxstep"],
     }
@@ -50,6 +51,13 @@ def get_default_section(myclass, occ: str):
         section["&system"].append("eamp")
     if myclass.la2F:
         section["&system"].append("la2F")
+    if myclass.lelfield:
+        section["&control"].append("nberrycyc")
+        section["&control"].append("lorbm")
+        section["&system"].append("edir")
+        section["&control"].append("gdir")
+        section["&control"].append("nppstr")
+        section["&electrons"].append("efield_cart")
     return section
 
 def get_section(myclass, occ):
@@ -70,7 +78,7 @@ class QEController:
         self.outdir = "./work"
         self.restart_mode = "from_scratch"
         self.pseudo_dir = "./pseudo"
-        self.charge = 0
+        self.tot_charge = 0
         self.ibrav = 0
         self.ecutwfc = 60.0
         self.ecutrho = 240.0
@@ -104,7 +112,14 @@ class QEController:
         self.target_hubbard_u_orb = ["3d", None]
         self.tefield = False
         self.dipfield = False
+        self.lelfield = False
+        self.nberrycyc = 1
+        self.lorbm = False
         self.edir = 3
+        self.gdir = 1
+        self.nppstr = 1
+        self.efield_cart = [0.0, 0.0, 0.0]
+        self.efield_phase = "none"
         self.emaxpos = 0.45
         self.eopreg = 0.10
         self.eamp = 0.009723452336177272
@@ -242,6 +257,12 @@ class QEController:
                 else:
                     val = self[a]
                 if a == "starting_magnetization" and self.nspin == 2:
+                    lis = self[a]
+                    for imag, x in enumerate(lis):
+                        if x is not None:
+                            txt += f"{a}({imag+1}) = {x}\n"
+                    continue
+                if a == "efield_cart" and self.lelfield:
                     lis = self[a]
                     for imag, x in enumerate(lis):
                         if x is not None:
