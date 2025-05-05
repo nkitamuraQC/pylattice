@@ -41,6 +41,7 @@ class QEMD:
     def main_step(self, istep, n_para):
         if self.press is None:
             current_lattice = self.default_lattice + self.dL * istep
+            self.qe_ctrl.press = None
             self.qe_ctrl.lattice = current_lattice
             self.qe_ctrl.kpoints = self.nkpoints
             self.qe_ctrl.calculation = "md"

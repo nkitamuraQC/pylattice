@@ -65,7 +65,7 @@ def get_section(myclass, occ):
     if "md" in myclass.calculation:
         section.update({"&ions": ["ion_temperature", "tempw"]})
     if "vc" in myclass.calculation:
-        section.update({"&cell": ["press"]})
+        section.update({"&cell": ["press", "cell_dynamics"]})
     return section
 
 
@@ -86,6 +86,7 @@ class QEController:
         self.occupations = "tetrahedra"
         self.mixing_beta = 0.7
         self.press = 0.0
+        self.cell_dynamics = "pr" ## "pr" or "bfgs"
         self.tstress = True
         self.tprnfor = True
         self.wf_collect = True
