@@ -62,10 +62,10 @@ def get_default_section(myclass, occ: str):
 
 def get_section(myclass, occ):
     section = get_default_section(myclass, occ)
-    if "vc" in myclass.calculation:
-        section.update({"&cell": ["press"]})
     if "md" in myclass.calculation:
         section.update({"&ions": ["ion_temperature", "tempw"]})
+    if "vc" in myclass.calculation:
+        section.update({"&cell": ["press"]})
     return section
 
 
