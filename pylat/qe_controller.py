@@ -41,7 +41,8 @@ def get_default_section(myclass, occ: str):
         section["&system"].append("tot_magnetization")
         section["&system"].append("starting_magnetization")
     if myclass.lda_plus_u:
-        section["&system"].append("lda_plus_u")
+        pass
+        # section["&system"].append("lda_plus_u")
     if myclass.tefield:
         section["&control"].append("tefield")
         section["&control"].append("dipfield")
@@ -62,10 +63,17 @@ def get_default_section(myclass, occ: str):
 
 def get_section(myclass, occ):
     section = get_default_section(myclass, occ)
-    if "md" in myclass.calculation:
+    if "vc-md" == myclass.calculation:
         section.update({"&ions": ["ion_temperature", "tempw"]})
-    if "vc" in myclass.calculation:
         section.update({"&cell": ["press", "cell_dynamics"]})
+    if "md" == myclass.calculation:
+        section.update({"&ions": ["ion_temperature", "tempw"]})
+    if "vc-relax" == myclass.calculation:
+        section.update({"&ions": []})
+        section.update({"&cell": ["press"]})
+    if "relax" == myclass.calculation:
+        section.update({"&ions": []})
+        section.update({"&cell": []})
     return section
 
 
@@ -251,25 +259,26 @@ class QEController:
             txt += k + "\n"
             for a in self.section[k]:
                 print(a)
+                val = self[a]
                 if self[a] == True and isinstance(self[a], bool):
                     val = ".true."
+                    txt += f"{a} = {val}, \n"
                 elif self[a] == False and isinstance(self[a], bool):
                     val = ".false."
-                else:
-                    val = self[a]
-                if a == "starting_magnetization" and self.nspin == 2:
+                    txt += f"{a} = {val}, \n"
+                elif a == "starting_magnetization" and self.nspin == 2:
                     lis = self[a]
                     for imag, x in enumerate(lis):
                         if x is not None:
                             txt += f"{a}({imag+1}) = {x}\n"
                     continue
-                if a == "efield_cart" and self.lelfield:
+                elif a == "efield_cart" and self.lelfield:
                     lis = self[a]
                     for imag, x in enumerate(lis):
                         if x is not None:
                             txt += f"{a}({imag+1}) = {x}\n"
                     continue
-                if isinstance(val, str):
+                elif isinstance(val, str):
                     if a == "occupations" and self.calculation == "nscf":
                         pass
                     elif a != "conv_thr" and val != ".true." and val != ".false.":

@@ -71,6 +71,7 @@ def test_qe_only():
         "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
     }
     qe = QEController(cifname, pseudo_dict)
+    qe.pseudo_dir = "./cif/"
     inp = qe.make_input()
     qe.write_input(inp)
     qe.exec()
@@ -94,6 +95,7 @@ def test_qemd():
         "Se": "Se.pbe-dn-kjpaw_psl.1.0.0.UPF",
     }
     qe = QEController(cifname, pseudo_dict, supercell=None)
+    qe.pseudo_dir = "./cif/"
     qe.conv_thr = "1d-5"
     qe.ecutwfc = 60.0
     qe.ecutrho = 240.0
