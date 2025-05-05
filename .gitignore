@@ -22,3 +22,5 @@ xsf*
 ./pseudo
 ./cif
 ./sample
+calculation_scf.in
+calculation_scf.out

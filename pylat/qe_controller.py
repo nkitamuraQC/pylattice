@@ -78,14 +78,14 @@ class QEController:
         self.outdir = "./work"
         self.restart_mode = "from_scratch"
         self.pseudo_dir = "./pseudo"
-        self.tot_charge = 0
+        self.tot_charge = 0.0
         self.ibrav = 0
         self.ecutwfc = 60.0
         self.ecutrho = 240.0
         self.etot_conv_thr = "1.0d-8"
         self.occupations = "tetrahedra"
         self.mixing_beta = 0.7
-        self.press = "0.d0"
+        self.press = 0.0
         self.tstress = True
         self.tprnfor = True
         self.wf_collect = True
