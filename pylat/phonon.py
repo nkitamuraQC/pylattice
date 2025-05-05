@@ -37,10 +37,10 @@ class Phonon:
 	        "outdir",
 	        "fildyn",
 	        "ldisp",
-	        "nq1",
-	        "nq2",
-	        "nq3",
-            "epsil"
+            "epsil",
+            "nq1",
+            "nq2",
+            "nq3",
         ]
         self.tr2_ph = "1.0d-14"
         self.fildyn = f'{self.prefix}.dyn'
@@ -50,11 +50,19 @@ class Phonon:
         self.nq1 = 2
         self.nq2 = 2
         self.nq3 = 2
-        self.nk1 = 16
-        self.nk2 = 16
-        self.nk3 = 16
+        self.nk1 = 4
+        self.nk2 = 4
+        self.nk3 = 4
+
+    def check_qpoint(self):
+        if self.ldisp == ".true.":
+            self.dfpt_section.append("nq1")
+            self.dfpt_section.append("nq2")
+            self.dfpt_section.append("nq3")
+        return
 
     def make_input_ph(self, txt=""):
+        # self.check_qpoint()
         txt += "\n"
         txt += f"&inputph\n"
         for item in self.dfpt_section:
@@ -77,11 +85,11 @@ class Phonon:
     def make_input_matdyn(self, txt=""):
         txt = "&input \n"
         txt += f"  flfrc = '{self.flfrc}',\n"
-        txt += "asr = 'crystal' \n"
-        txt += "dos = .true. \n"
-        txt += f"nk1 = {self.nk1},\n"
-        txt += f"nk2 = {self.nk2},\n"
-        txt += f"nk3 = {self.nk3},\n"
+        txt += "  asr = 'crystal' \n"
+        txt += "  dos = .true. \n"
+        txt += f"  nk1 = {self.nk1},\n"
+        txt += f"  nk2 = {self.nk2},\n"
+        txt += f"  nk3 = {self.nk3},\n"
         txt += "/"
         return txt
     
@@ -104,6 +112,10 @@ class Phonon:
         """
         Run the phonon calculation.
         """
+        inp_ph = self.make_input_ph()
+        inp_q2r = self.make_input_q2r()
+        inp_matdyn = self.make_input_matdyn()
+        self.write_input(inp_ph, inp_q2r, inp_matdyn)
         run_command(self.prefix + ".ph.in", self.prefix + ".ph.out", kernel="ph.x")
         run_command(self.prefix + ".q2r.in", self.prefix + ".q2r.out", kernel="q2r.x")
         run_command(self.prefix + ".matdyn.in", self.prefix + ".matdyn.out", kernel="matdyn.x")
