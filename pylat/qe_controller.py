@@ -171,11 +171,11 @@ class QEController:
 
         self.nat = len(self.geoms)
         self.ntyp = len(self.atoms)
-	self.npoint_per_path = 30
+        self.npoint_per_path = 30
 
     def get_kpoint(self):
-	sp = SeekPath(self)
-	_, self.kpath = sp.exec()
+        sp = SeekPath(self)
+        _, self.kpath = sp.exec()
         dx = 1 / self.kpoints[0]
         dy = 1 / self.kpoints[1]
         dz = 1 / self.kpoints[2]
@@ -306,13 +306,13 @@ class QEController:
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
         elif self.calculation == "bands":
-	    self.get_kpoint()
-	    txt += "K_POINTS {tpiba_b}\n"
-	    txt += f"{len(self.kpath}\n"
-	    for l in self.kpath:
-	        txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} {self.npoint_per_path}\n"
-	else:
-	    pass
+            self.get_kpoint()
+            txt += "K_POINTS {tpiba_b}\n"
+            txt += f"{len(self.kpath)}\n"
+            for l in self.kpath:
+	            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} {self.npoint_per_path}\n"
+        else:
+            pass
 	
         if self.lda_plus_u:
             txt += "\n"
@@ -397,13 +397,13 @@ class QEController:
         return
 
     def get_bands(self):
-	txt = f"&bands
-   outdir = '{self.outdir}',
-   prefix = '{self.prefix}',
-   filband= '{self.prefix}.band',
-   lsym=.true.
-/"
-	bands = open("bands.in", "w")
+        txt = f"""&bands
+outdir = '{self.outdir}',
+prefix = '{self.prefix}',
+filband= '{self.prefix}.band',
+lsym = .true.
+/"""
+        bands = open("bands.in", "w")
         bands_in = "bands.in"
         bands_out = "bands.out"
         bands.write(txt)
