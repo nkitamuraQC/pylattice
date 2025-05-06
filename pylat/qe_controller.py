@@ -4,6 +4,7 @@ import periodictable
 import numpy as np
 import pathlib
 from pylat.get_section_cryspy import get_section_for_cryspy
+from pylat.k_path import SeekPath
 import subprocess
 
 def get_default_section(myclass, occ: str):
@@ -170,8 +171,11 @@ class QEController:
 
         self.nat = len(self.geoms)
         self.ntyp = len(self.atoms)
+	self.npoint_per_path = 30
 
     def get_kpoint(self):
+	sp = SeekPath(self)
+	_, self.kpath = sp.exec()
         dx = 1 / self.kpoints[0]
         dy = 1 / self.kpoints[1]
         dz = 1 / self.kpoints[2]
@@ -301,7 +305,15 @@ class QEController:
         if not self.crystal_kpoint and self.calculation != "nscf":
             txt += "K_POINTS {" + "automatic" + "}\n"
             txt += f"{self.kpoints[0]} {self.kpoints[1]} {self.kpoints[2]} {self.offset[0]} {self.offset[1]} {self.offset[2]}"
-        
+        elif self.calculation == "bands":
+	    self.get_kpoint()
+	    txt += "K_POINTS {tpiba_b}\n"
+	    txt += f"{len(self.kpath}\n"
+	    for l in self.kpath:
+	        txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} {self.npoint_per_path}\n"
+	else:
+	    pass
+	
         if self.lda_plus_u:
             txt += "\n"
             txt += "HUBBARD (ortho-atomic)\n"
@@ -336,7 +348,6 @@ class QEController:
         txt += "ATOMIC_SPECIES\n"
         for at in self.atoms:
             txt += f"{at[0]}  {at[1]}  {at[2]} \n"
-
         return txt
 
     def write_input(self, inp):
@@ -383,6 +394,22 @@ class QEController:
 
         with open(self.filename, 'r') as input_file, open(self.log, 'w') as output_file:
             subprocess.run(["mpirun", "-np", str(n_para), "pw.x"], stdin=input_file, stdout=output_file, check=True)
+        return
+
+    def get_bands(self):
+	txt = f"&bands
+   outdir = '{self.outdir}',
+   prefix = '{self.prefix}',
+   filband= '{self.prefix}.band',
+   lsym=.true.
+/"
+	bands = open("bands.in", "w")
+        bands_in = "bands.in"
+        bands_out = "bands.out"
+        bands.write(txt)
+        bands.close()
+        with open(bands_in, 'r') as input_file, open(bands_out, 'w') as output_file:
+            subprocess.run(["bands.x"], stdin=input_file, stdout=output_file, check=True)
         return
 
     def exec_dos(self):
