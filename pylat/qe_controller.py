@@ -328,19 +328,31 @@ class QEController:
             print(k)
             txt += k + "\n"
             for a in self.section[k]:
-                if isinstance(self[a], bool) and self[a] == True:
+                print(a)
+                val = self[a]
+                if self[a] == True and isinstance(self[a], bool):
                     val = ".true."
-                elif isinstance(self[a], bool) and self[a] == False:
-                    val = ".false."
-                else:
-                    val = self[a]
-                if isinstance(val, str):
-                    if a != "conv_thr" and val != ".true." and val != ".false.":
-                        txt += f"{a} = '{val}', \n"
-                    else:
-                        txt += f"{a} = {val}, \n"
-                else:
                     txt += f"{a} = {val}, \n"
+                elif self[a] == False and isinstance(self[a], bool):
+                    val = ".false."
+                    txt += f"{a} = {val}, \n"
+                elif a == "starting_magnetization" and self.nspin == 2:
+                    lis = self[a]
+                    for imag, x in enumerate(lis):
+                        if x is not None:
+                            txt += f"{a}({imag+1}) = {x}\n"
+                    continue
+                elif a == "efield_cart" and self.lelfield:
+                    lis = self[a]
+                    for imag, x in enumerate(lis):
+                        if x is not None:
+                            txt += f"{a}({imag+1}) = {x}\n"
+                    continue
+                elif isinstance(val, str):
+                    if a == "occupations" and self.calculation == "nscf":
+                        pass
+                    elif a != "conv_thr" and val != ".true." and val != ".false.":
+                        txt += f"{a} = '{val}', \n"
                 if a == "nbnd" and self.calculation == "nscf":
                     txt += f"{a} = {val}, \n"
 
@@ -371,7 +383,7 @@ class QEController:
         d = pathlib.Path(dirname)
         self.filename = str(d.joinpath(self.prefix+f".in_{index}"))
         self.log = self.prefix+".out"
-        wf = open(self.prefix+".in", "w")
+        wf = open(self.filename, "w")
         wf.write(inp)
         wf.close()
         return
