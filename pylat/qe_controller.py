@@ -353,6 +353,8 @@ class QEController:
                         pass
                     elif a != "conv_thr" and val != ".true." and val != ".false.":
                         txt += f"{a} = '{val}', \n"
+		else:
+                    txt += f"{a} = {val}, \n"
                 if a == "nbnd" and self.calculation == "nscf":
                     txt += f"{a} = {val}, \n"
 
