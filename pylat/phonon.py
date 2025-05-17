@@ -33,10 +33,10 @@ class Phonon:
 
         self.dfpt_section = [
             "tr2_ph",
-	        "prefix",
-	        "outdir",
-	        "fildyn",
-	        "ldisp",
+	    "prefix",
+	    "outdir",
+	    "fildyn",
+	    "ldisp",
             "epsil",
             "nq1",
             "nq2",
