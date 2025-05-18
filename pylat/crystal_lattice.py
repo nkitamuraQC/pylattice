@@ -2,6 +2,36 @@ from ase.spacegroup import crystal
 from pymatgen.core import Structure
 from ase.io import write
 
+from ase.io import read
+from ase.spacegroup import get_spacegroup
+
+from ase.io import read
+import spglib
+
+def get_spacegroup_from_cif_spglib(cif_file_path, symprec=1e-5):
+    """
+    CIFファイルからspglibを使って空間群を取得する関数
+
+    Parameters:
+        cif_file_path (str): CIFファイルへのパス
+        symprec (float): 対称性の検出に使う精度（デフォルト: 1e-5）
+
+    Returns:
+        str: 空間群の記号（例: 'Fm-3m (225)'）
+    """
+    atoms = read(cif_file_path)
+
+    # spglibのセル形式に変換
+    lattice = atoms.get_cell()
+    positions = atoms.get_scaled_positions()
+    numbers = atoms.get_atomic_numbers()
+    cell = (lattice, positions, numbers)
+
+    # 空間群情報の取得
+    spacegroup = spglib.get_spacegroup(cell, symprec=symprec)
+
+    return spacegroup
+
 
 class SpaceGroupSupplement:
     def __init__(self, ciffile, xyzfile=None, lattfile=None):
@@ -15,6 +45,12 @@ class SpaceGroupSupplement:
         self.lattice_param = None
         self.spacegroup = None
 
+
+    def get_sg(self):
+        sg = get_spacegroup_from_cif_spglib(self.ciffile)
+        print(f"Space Group: {sg}")
+        return
+        
     def read_file(self):
         structure = Structure.from_file(self.ciffile)
         lattice = structure.lattice
