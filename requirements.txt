@@ -4,3 +4,4 @@ periodictable
 numpy
 seekpath
 scikit-learn
+spglib
