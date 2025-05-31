@@ -310,7 +310,7 @@ class QEController:
             txt += "K_POINTS {tpiba_b}\n"
             txt += f"{len(self.kpath)}\n"
             for l in self.kpath:
-	        txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} {self.npoint_per_path}\n"
+	            txt += f"{l[0]:.10f}   {l[1]:.10f}   {l[2]:.10f} {self.npoint_per_path}\n"
         else:
             pass
 	
